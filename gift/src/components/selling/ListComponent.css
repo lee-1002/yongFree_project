@@ -1,0 +1,187 @@
+.selling-page {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #eee;
+}
+
+/* ✅ 등록 버튼 컨테이너 */
+.add-button-container {
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+/* ✅ 등록 버튼 */
+.add-button {
+  display: inline-block;
+  background-color: #3885dd;
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+.add-button:hover {
+  background-color: #3c62ca;
+}
+
+/* 카테고리 메뉴: 다중 컬럼 그리드 */
+.category-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* 각 카테고리 컬럼 */
+.category-column {
+  position: relative;
+}
+.category-column h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+.category-column ul {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  margin: 0;
+  list-style: none;
+  display: none;
+  z-index: 10;
+}
+.category-column:hover ul {
+  display: block;
+}
+.category-column li {
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  padding: 4px 16px;
+  transition: color 0.2s, background 0.2s;
+}
+.category-column li:hover,
+.category-column li.active {
+  color: #d12828;
+  background: #f9f9f9;
+}
+
+/* 정렬 메뉴 */
+.sort-menu {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  border-bottom: 1px solid #eee;
+}
+.sort-menu li {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.sort-menu li:hover {
+  color: #d12828;
+}
+.sort-menu li.active {
+  color: #d12828;
+  border-color: #d12828;
+  font-weight: bold;
+}
+
+/* 상품 리스트: CSS Grid */
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  justify-content: start;
+}
+
+/* 상품 카드 */
+.product-card {
+  background: #f6f2ec;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  transition: box-shadow 0.2s;
+}
+.product-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 상품 이미지 */
+.product-image {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* 상품명 */
+.title {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* 가격 영역 */
+.price {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 14px;
+}
+.discount {
+  color: #d12828;
+  font-weight: bold;
+}
+.sale-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 12px;
+}
+
+/* 없을 때 메시지 */
+.no-items {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #999;
+  padding: 24px;
+}
+
+/* 로딩 중 메시지 */
+.loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #333;
+  padding: 24px;
+  font-weight: bold;
+}

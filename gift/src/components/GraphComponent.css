@@ -1,0 +1,186 @@
+/* 전체 공통 Css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* 광고, 그래프, 명단 컨테이너 */
+.ad-graph-list-container {
+  /* border: 1px solid #000000; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+/* 광고 컨테이너 */
+.ad-container {
+  margin: 0;
+  /* border: 1px solid red; */
+  flex: 6;
+  padding: 0;
+  box-sizing: border-box;
+  height: 450px;
+  /* ▼▼▼ 추천 스타일 적용 ▼▼▼ */
+  border: 3px solid #007bff; /* 파란색의 3px 두께 테두리 (브랜드 색상에 맞춰 변경) */
+  border-radius: 8px;
+  box-shadow: none; /* 그림자 제거 */
+
+  /* border: none;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);  */
+
+  /* border: 1px solid #e2e8f0; 
+    border-radius: 8px;    
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  */
+}
+.ad-container img {
+  width: 100%; /* 너비를 부모 컨테이너에 꽉 채웁니다. */
+  height: 100%; /* 높이를 부모 컨테이너에 꽉 채웁니다. (450px) */
+  object-fit: cover; /* 이미지가 찌그러지지 않고, 비율을 유지한 채로 컨테이너를 가득 채웁니다. */
+}
+.graph-list-container {
+  display: flex;
+  flex: 4;
+}
+/* 그래프 컨테이너 */
+.graph-container {
+  margin-top: 0px;
+  padding-inline: 5px;
+  /* border: 1px solid rgb(0, 255, 21); */
+  /* align-items: center; */
+  /* flex: 2.5; */
+  /* font-size: 16px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 430px;
+  height: 0px;
+}
+
+.graph-container h2 {
+  margin-top: 20px;
+  /* border: 1px solid red; */
+  font-size: larger;
+}
+/* 그래프, 리스트 검색창 */
+.input-group {
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  border: 1px solid rgb(165, 165, 167);
+  justify-content: center;
+  width: 230px;
+  border-radius: 5px;
+}
+/* 그래프, 리스트 검색창 버튼 */
+.input-group button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 200ms;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+  padding: 0;
+  border: none;
+  width: 50px;
+  height: 25px;
+  background-color: #999fa5;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: small;
+}
+.input-group button:hover {
+  background-color: #5d5e61;
+}
+.graph-display img {
+  /* margin-top: ; */
+  /* border: 1px solid red; */
+  width: 100%;
+  height: 350px;
+  object-fit: cover; /* 이미지가 찌그러지지 않고, 비율을 유지한 채로 컨테이너를 가득 채웁니다. */
+}
+/* 명단 컨테이너 */
+.list-container {
+  align-items: center;
+  /* border: solid 1px #000000; */
+  flex: 1.5;
+  /* padding: 10px; */
+  /* box-sizing: border-box; */
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+/* 표 스타일 */
+.list-container-table {
+  border: solid 1px #999fa5;
+}
+
+.list-container-table-head {
+  /* 표의 헤더(머리글) 영역 스타일 */
+  display: flex; /* 자식 요소(컬럼명)들을 가로로 배치 */
+  background-color: #f8f9fa; /* 헤더 배경색 */
+  /* font-weight: bold; */
+  border-bottom: 2px solid #ddd; /* 본문과 구분되는 두꺼운 밑줄 */
+}
+
+.div-table-row {
+  display: flex; /* 이 속성이 핵심입니다. */
+  border-bottom: 1px solid #ddd;
+}
+
+.div-table-cell {
+  padding: 5px;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+/* 고유 클래스로 너비 비율 지정 */
+.rank-cell {
+  /* border: solid 1px red; */
+  flex: 5; /* 순위 컬럼은 2의 비율 */
+}
+.name-cell {
+  flex: 5; /* 이름 컬럼은 3.5의 비율 */
+}
+
+/* @@@@@@@@@@@@@@@@@@@@@@@@@반응형@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+
+/* 화면 너비가 768px 이하일 때 적용될 스타일 */
+@media (max-width: 768px) {
+  /* 1. 메인 컨테이너들을 세로로 쌓습니다. (기존 코드) */
+  .ad-graph-list-container {
+    flex-direction: column; /* 가로(row) -> 세로(column) */
+    align-items: stretch; /* 아이템들이 화면 너비를 꽉 채우도록 변경 */
+  }
+
+  .ad-container {
+    flex: none;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .graph-list-container {
+    display: flex;
+    /* gap: 20px; 그래프와 표 사이의 간격 */
+    align-items: flex-start; /* 위쪽을 기준으로 정렬 */
+    width: 100%;
+    border: solid 1px red; /* 영역 확인을 위한 임시 테두리 */
+  }
+  .list-container {
+    padding-block: 10px;
+  }
+
+  /* 그래프와 표를 감싸는 results-container도 세로로 쌓이게 변경 */
+  .results-container {
+    padding: 0;
+    margin: 0;
+    flex-direction: column;
+    align-items: center; /* 가운데 정렬 */
+    gap: 10px;
+    width: 100%;
+  }
+}

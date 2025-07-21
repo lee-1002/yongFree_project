@@ -1,0 +1,203 @@
+/* 가운데 본문 영역 */
+.Board-main {
+  position: relative; /* 여기에 추가 */
+  width: 100%;
+
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* 검색창만 있는 컨트롤 */
+.Board-controls {
+  margin-bottom: 16px;
+}
+.Board-controls input {
+  width: 100%;
+  max-width: 300px;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 2px solid #000;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+/* 글쓰기 버튼: .Board-main 기준으로 absolute 배치 */
+.add-post-button {
+  position: absolute;
+  top: 20px; /* Board-main padding-top */
+  right: 20px; /* Board-main padding-right */
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.add-post-image {
+  width: 24px;
+  height: 24px;
+  margin-right: 6px;
+}
+.add-post-text {
+  font-size: 16px;
+  color: #333;
+}
+
+/* 카테고리 + 리스트 flex 영역 */
+.Board-content-area {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* 카테고리 */
+.category-container {
+  width: 200px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.category-list {
+  list-style: none;
+  padding-left: 0;
+}
+.category-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.category-btn:hover {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+/* 리스트 영역 */
+.board-list-container {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 16px;
+}
+
+/* 카드 */
+.Board-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  padding: 16px;
+  transition: 0.3s ease;
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+.Board-card:hover {
+  transform: translateY(-3px);
+}
+
+/* 헤더: 제목 + 버튼 */
+.Board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.Board-header.no-actions {
+  justify-content: flex-start;
+}
+.Board-header small {
+  color: #666;
+  margin-left: 8px;
+}
+.button-container button {
+  margin-left: 8px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+.edit-btn {
+  background-color: #4caf50;
+  color: white;
+}
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+/* 폼 오버레이 */
+.Form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 60px;
+  z-index: 1000;
+}
+
+/* 글쓰기 폼 */
+.Write-form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.Write-form h2 {
+  margin-bottom: 16px;
+}
+.Write-form input,
+.Write-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.Write-form textarea {
+  height: 200px;
+  resize: vertical;
+}
+.Write-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.Write-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.Write-buttons button[type="submit"] {
+  background-color: #4caf50;
+  color: white;
+}
+.Write-buttons button[type="button"] {
+  background-color: #f44336;
+  color: white;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .category-container {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .board-list-container {
+    width: 100%;
+  }
+}

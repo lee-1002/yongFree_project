@@ -1,0 +1,150 @@
+/* 전체 공통 Css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 섹션 제목 */
+.section-title {
+  text-align: center;
+  margin: 24px 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Hot deal용 캐러셀 */
+.hc-container {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.hc-container.no-controls .hc-btn {
+  display: none;
+}
+.hc-viewport {
+  overflow: hidden;
+}
+.hc-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+.hc-card {
+  flex: 0 0 240px; /* 카드 너비 고정 */
+  margin-right: 16px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  text-align: center;
+}
+.hc-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+.hc-card-info {
+  font-size: 14px;
+}
+.hc-card-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hc-card-sale-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #d12828;
+  margin-bottom: 2px;
+}
+.hc-card-original-price {
+  font-size: 13px;
+  color: #999;
+  text-decoration: line-through;
+  margin-bottom: 4px;
+}
+.hc-card-discount {
+  background: #d12828;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.hc-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #333;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.hc-btn.left {
+  left: -8px;
+}
+.hc-btn.right {
+  right: -8px;
+}
+
+/* 카테고리 섹션 타이틀 */
+.category-section {
+  margin: 40px auto;
+}
+.category-title {
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* GridPaginator 스타일 */
+.grid-paginator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 카드 그리드를 가운데 정렬 */
+  margin-bottom: 40px;
+}
+.grid-btn {
+  background: #fff;
+  border: 1px solid #333;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.grid-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 1행 × 2열 그리드: 카드 두 개 넓이만큼만 차지 */
+.grid-viewport {
+  display: grid;
+  grid-template-columns: repeat(2, 240px); /* 240px 고정폭 카드 2개 */
+  gap: 32px;
+  margin: 0 16px;
+  /* flex: 1; 제거 */
+}
+
+/* 페이징 텍스트 */
+.paging {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #555;
+}

@@ -1,0 +1,142 @@
+/* 전체 wrapper – 가운데 정렬 */
+.selling-read {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+  min-height: 100vh;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 상세 본문 영역 (이미지, 제목, 본문 등) */
+.selling-read > div,
+.selling-read > img,
+.selling-read > h2,
+.selling-read > p,
+.selling-read .order-controls {
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+}
+
+/* 뒤로가기 버튼 */
+.selling-read > button {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #0070f3;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+/* 상품 이미지 */
+.selling-read img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  object-fit: contain;
+}
+
+/* 상품명 */
+.selling-read h2 {
+  font-size: 28px;
+  margin: 8px 0;
+  color: #333;
+}
+
+/* 브랜드 · 가격 정보 */
+.selling-read p {
+  font-size: 16px;
+  color: #555;
+  margin: 4px 0;
+}
+
+/* 할인가 있을 때 강조 */
+.selling-read p.sale-price {
+  font-weight: bold;
+  color: #e60023;
+}
+.selling-read p.original-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-left: 8px;
+}
+
+/* 상품 설명 */
+.selling-read .product-desc {
+  margin-top: 12px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* ── 구매 컨트롤 ── */
+.order-controls {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 800px;
+}
+
+/* 수량 입력 */
+.order-controls label {
+  font-size: 16px;
+  color: #333;
+}
+.order-controls input[type="number"] {
+  width: 60px;
+  padding: 4px 8px;
+  margin-left: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* 버튼 기본 스타일 */
+.order-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* 장바구니 담기 버튼 */
+.order-controls button.btn-cart {
+  background-color: #0070f3;
+  color: #fff;
+}
+.order-controls button.btn-cart:hover {
+  background-color: #005bb5;
+}
+
+/* 바로 구매 버튼 */
+.order-controls button.btn-buy {
+  background-color: #e60023;
+  color: #fff;
+}
+.order-controls button.btn-buy:hover {
+  background-color: #b3001a;
+}
+
+/* 반응형 (화면 작아질 때) */
+@media (max-width: 600px) {
+  .selling-read {
+    padding: 20px 8px;
+  }
+  .selling-read img {
+    max-width: 100%;
+  }
+  .order-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .order-controls button {
+    width: 100%;
+  }
+}
