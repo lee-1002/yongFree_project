@@ -12,22 +12,36 @@ const EventListComponent = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pageInfo, setPageInfo] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   const navigate = useNavigate();
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
 
   useEffect(() => {
-    loadEvents();
-  }, []);
+    loadEvents(currentPage);
+  }, [currentPage]);
 
-  const loadEvents = async () => {
+  const loadEvents = async (page) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getEvents();
+      const data = await getEvents(page);
       console.log("서버에서 받은 이벤트 데이터:", data);
 
-      if (Array.isArray(data)) {
-        setEvents(data);
+      if (data?.dtoList) {
+        setEvents(data.dtoList);
+        setPageInfo({
+          pageNumList: data.pageNumList,
+          prev: data.prev,
+          next: data.next,
+          prevPage: data.prevPage,
+          nextPage: data.nextPage,
+          current: data.current,
+          totalPage: data.totalPage,
+        });
       } else {
         setError("이벤트 데이터가 올바르지 않습니다.");
         setEvents([]);
@@ -71,6 +85,7 @@ const EventListComponent = () => {
   return (
     <div className="event-container">
       <h1>이벤트 목록</h1>
+
       <ul className="boardEventList">
         {events.length === 0 ? (
           <li>등록된 이벤트가 없습니다.</li>
@@ -95,7 +110,6 @@ const EventListComponent = () => {
                 </div>
                 <div className="txt ellipsis">{event.description}</div>
 
-                {/* 새로 추가된 가게명과 주소 */}
                 <div className="store-info">
                   <strong>가게명:</strong> {event.storeName || "정보 없음"}
                   <br />
@@ -114,6 +128,32 @@ const EventListComponent = () => {
           ))
         )}
       </ul>
+
+      {/* ✅ 추가된 페이징 UI */}
+      <div className="pagination">
+        {" "}
+        {/* 🔥 추가됨 */}
+        {pageInfo.prev && (
+          <button onClick={() => handlePageClick(pageInfo.prevPage)}>
+            &laquo;
+          </button> // 🔥 추가됨
+        )}
+        {pageInfo.pageNumList?.map((num) => (
+          <button
+            key={num}
+            onClick={() => handlePageClick(num)} // 🔥 추가됨
+            className={num === pageInfo.current ? "active" : ""} // 🔥 추가됨
+          >
+            {num}
+          </button>
+        ))}
+        {pageInfo.next && (
+          <button onClick={() => handlePageClick(pageInfo.nextPage)}>
+            &raquo;
+          </button> // 🔥 추가됨
+        )}
+      </div>
+
       <button onClick={handleAdd}>이벤트 추가</button>
     </div>
   );

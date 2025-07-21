@@ -2,6 +2,8 @@ package com.gifree.controller;
 
 import com.gifree.domain.Event;
 import com.gifree.dto.EventDTO;
+import com.gifree.dto.PageRequestDTO;
+import com.gifree.dto.PageResponseDTO;
 import com.gifree.service.EventService;
 
 import lombok.extern.log4j.Log4j2;
@@ -22,10 +24,19 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
-    }
+  @GetMapping
+public ResponseEntity<PageResponseDTO<Event>> getEventList(PageRequestDTO requestDTO) {
+    List<Event> list = eventService.getList(requestDTO);
+    long total = eventService.getTotalCount();
+
+    PageResponseDTO<Event> response = PageResponseDTO.<Event>withAll()
+            .dtoList(list)
+            .pageRequestDTO(requestDTO)
+            .totalCount(total)
+            .build();
+
+    return ResponseEntity.ok(response);
+}
 
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {

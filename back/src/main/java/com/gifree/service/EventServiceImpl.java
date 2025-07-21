@@ -1,7 +1,9 @@
 package com.gifree.service;
 
 import com.gifree.domain.Event;
+import com.gifree.dto.PageRequestDTO;
 import com.gifree.repository.EventRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +55,19 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
+    }
+
+    // ✅ 페이징된 목록 조회
+    @Override
+    public List<Event> getList(PageRequestDTO requestDTO) {
+        int page = requestDTO.getPage() - 1;
+        int size = requestDTO.getSize();
+        return eventRepository.findAll(PageRequest.of(page, size)).getContent();
+    }
+
+    // ✅ 전체 이벤트 수 조회
+    @Override
+    public long getTotalCount() {
+        return eventRepository.count();
     }
 }

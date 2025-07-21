@@ -4,8 +4,8 @@ import { API_SERVER_HOST } from "./todoApi"; // 예: http://localhost:8080
 const host = `${API_SERVER_HOST}/api/events`;
 
 // 이벤트 목록 조회
-export const getEvents = async () => {
-  const res = await axios.get(host);
+export const getEvents = async (page = 1, size = 10) => {
+  const res = await axios.get(`${host}?page=${page}&size=${size}`);
   return res.data;
 };
 
