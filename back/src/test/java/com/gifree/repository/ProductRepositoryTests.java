@@ -63,7 +63,7 @@ public class ProductRepositoryTests {
       @Commit
   @Transactional
   @Test
-  public void testDelte() {
+  public void testDelete() {
 
     Long pno = 100L;
 

@@ -1,4 +1,3 @@
-// src/main/java/com/gifree/dto/ProductDTO.java
 package com.gifree.dto;
 
 import lombok.*;
@@ -13,9 +12,15 @@ public class ProductDTO {
 
     private Long pno;
 
+    private String brand;
+
     private String pname;
 
     private int price;
+
+    private Integer discountRate;   // 할인율 (nullable)
+
+    private Integer salePrice;      // 할인가 (nullable)
 
     private String pdesc;
 
@@ -26,5 +31,4 @@ public class ProductDTO {
 
     @Builder.Default
     private List<String> uploadFileNames = new ArrayList<>();
-
 }

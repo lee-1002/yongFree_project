@@ -8,6 +8,9 @@ const initState = {
   pname: "",
   pdesc: "",
   price: 0,
+  brand: "",
+  discountRate: 0,
+  salePrice: 0, // 자동 계산용으로 상태만 둠
   files: [],
 };
 
@@ -22,16 +25,35 @@ const AddComponent = () => {
 
   const { moveToList } = useCustomMove(); // 이동을 위한 함수
 
-  // ✅ 안전한 상태 업데이트 방식
   const handleChangeProduct = (e) => {
     const { name, value } = e.target;
-    setProduct((prev) => ({
-      ...prev,
-      [name]: name === "price" ? parseInt(value, 10) || 0 : value,
-    }));
+
+    if (name === "price" || name === "discountRate") {
+      // 앞 0 제거, 단 숫자 '0'은 유지
+      const normalizedValue = value.replace(/^0+(?=\d)/, "");
+      const parsedValue = parseInt(normalizedValue, 10) || 0;
+
+      setProduct((prev) => {
+        const updated = { ...prev, [name]: parsedValue };
+
+        // price 또는 discountRate가 바뀌면 salePrice 자동 계산
+        if (name === "price" || name === "discountRate") {
+          updated.salePrice = Math.round(
+            (updated.price * (100 - updated.discountRate)) / 100
+          );
+        }
+
+        return updated;
+      });
+    } else {
+      setProduct((prev) => {
+        const updated = { ...prev, [name]: value };
+        return updated;
+      });
+    }
   };
 
-  const handleClickAdd = (e) => {
+  const handleClickAdd = () => {
     const files = uploadRef.current.files;
     const formData = new FormData();
 
@@ -39,12 +61,14 @@ const AddComponent = () => {
       formData.append("files", files[i]);
     }
 
-    //other data
     formData.append("pname", product.pname);
     formData.append("pdesc", product.pdesc);
     formData.append("price", product.price.toString());
+    formData.append("brand", product.brand);
+    formData.append("discountRate", product.discountRate.toString());
+    formData.append("salePrice", product.salePrice.toString());
 
-    // ✅ 디버깅용
+    // 디버깅용 로그
     for (let pair of formData.entries()) {
       console.log("formData ✅", pair[0], ":", pair[1]);
     }
@@ -109,9 +133,49 @@ const AddComponent = () => {
             className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
             name="price"
             type="number"
-            value={product.price}
+            value={product.price === 0 ? "" : product.price}
             onChange={handleChangeProduct}
           />
+        </div>
+      </div>
+
+      {/* brand */}
+      <div className="flex justify-center">
+        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+          <div className="w-1/5 p-6 text-right font-bold">Brand</div>
+          <input
+            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
+            name="brand"
+            type="text"
+            value={product.brand}
+            onChange={handleChangeProduct}
+          />
+        </div>
+      </div>
+
+      {/* discountRate */}
+      <div className="flex justify-center">
+        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+          <div className="w-1/5 p-6 text-right font-bold">
+            Discount Rate (%)
+          </div>
+          <input
+            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
+            name="discountRate"
+            type="number"
+            value={product.discountRate === 0 ? "" : product.discountRate}
+            onChange={handleChangeProduct}
+          />
+        </div>
+      </div>
+
+      {/* salePrice 출력 (읽기 전용) */}
+      <div className="flex justify-center">
+        <div className="relative mb-4 flex w-full flex-wrap items-stretch items-center">
+          <div className="w-1/5 p-6 text-right font-bold">Sale Price</div>
+          <div className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md bg-gray-100">
+            {product.salePrice.toLocaleString()} 원
+          </div>
         </div>
       </div>
 

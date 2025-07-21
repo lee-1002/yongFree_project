@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("getList..............");
 
         Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1, // 페이지 시작 번호는 0부터
+                pageRequestDTO.getPage() - 1, // 페이지는 0부터 시작
                 pageRequestDTO.getSize(),
                 Sort.by("pno").descending());
 
@@ -48,9 +48,12 @@ public class ProductServiceImpl implements ProductService {
 
             ProductDTO productDTO = ProductDTO.builder()
                     .pno(product.getPno())
+                    .brand(product.getBrand())
                     .pname(product.getPname())
-                    .pdesc(product.getPdesc())
                     .price(product.getPrice())
+                    .salePrice(product.getSalePrice())
+                    .discountRate(product.getDiscountRate())
+                    .pdesc(product.getPdesc())
                     .delFlag(product.isDelFlag())
                     .uploadFileNames(List.of(productImage.getFileName()))
                     .build();
@@ -74,24 +77,26 @@ public class ProductServiceImpl implements ProductService {
         return result.getPno();
     }
 
-    private Product dtoToEntity(ProductDTO productDTO) {
-        if (productDTO == null) {
+    private Product dtoToEntity(ProductDTO dto) {
+        if (dto == null) {
             throw new IllegalArgumentException("ProductDTO is null");
         }
 
         Product.ProductBuilder builder = Product.builder()
-                .pno(productDTO.getPno())
-                .pname(productDTO.getPname())
-                .pdesc(productDTO.getPdesc())
-                .price(productDTO.getPrice());
+                .pno(dto.getPno())
+                .brand(dto.getBrand())
+                .pname(dto.getPname())
+                .price(dto.getPrice())
+                .salePrice(dto.getSalePrice())
+                .discountRate(dto.getDiscountRate())
+                .pdesc(dto.getPdesc())
+                .delFlag(dto.isDelFlag());
 
         Product product = builder.build();
 
-        List<String> uploadFileNames = productDTO.getUploadFileNames();
+        List<String> uploadFileNames = dto.getUploadFileNames();
         if (uploadFileNames != null && !uploadFileNames.isEmpty()) {
-            for (String fileName : uploadFileNames) {
-                product.addImageString(fileName);
-            }
+            uploadFileNames.forEach(product::addImageString);
         }
 
         return product;
@@ -111,9 +116,12 @@ public class ProductServiceImpl implements ProductService {
 
         ProductDTO.ProductDTOBuilder builder = ProductDTO.builder()
                 .pno(product.getPno())
+                .brand(product.getBrand())
                 .pname(product.getPname())
-                .pdesc(product.getPdesc())
                 .price(product.getPrice())
+                .salePrice(product.getSalePrice())
+                .discountRate(product.getDiscountRate())
+                .pdesc(product.getPdesc())
                 .delFlag(product.isDelFlag());
 
         List<ProductImage> imageList = product.getImageList();
@@ -128,17 +136,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void modify(ProductDTO productDTO) {
-        Optional<Product> result = productRepository.findById(productDTO.getPno());
+    public void modify(ProductDTO dto) {
+        Optional<Product> result = productRepository.findById(dto.getPno());
         Product product = result.orElseThrow();
 
-        product.changeName(productDTO.getPname());
-        product.changeDesc(productDTO.getPdesc());
-        product.changePrice(productDTO.getPrice());
+        product.changeName(dto.getPname());
+        product.changeDesc(dto.getPdesc());
+        product.changePrice(dto.getPrice());
+
+        // 새 필드도 업데이트
+        product.changeBrand(dto.getBrand());
+        product.changeSalePrice(dto.getSalePrice());
+        product.changeDiscountRate(dto.getDiscountRate());
 
         product.clearList();
 
-        List<String> uploadFileNames = productDTO.getUploadFileNames();
+        List<String> uploadFileNames = dto.getUploadFileNames();
         if (uploadFileNames != null && !uploadFileNames.isEmpty()) {
             uploadFileNames.forEach(product::addImageString);
         }

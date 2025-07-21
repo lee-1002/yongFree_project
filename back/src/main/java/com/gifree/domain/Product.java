@@ -15,56 +15,79 @@ import java.util.List;
 @NoArgsConstructor
 public class Product {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long pno;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long pno;
 
-  private String pname;
+    private String brand;
 
-  private int price;
+    private String pname;
 
-  private String pdesc;
+    private int price;
 
-  private boolean delFlag;
+    private Integer discountRate; 
 
+    private Integer salePrice;    
 
-  public void changeDel(boolean delFlag) {
-    this.delFlag = delFlag;
-  }
+    private String pdesc;
 
+    private boolean delFlag;
 
-  @ElementCollection
-  @Builder.Default
-  private List<ProductImage> imageList = new ArrayList<>();
+    @ElementCollection
+    @Builder.Default
+    private List<ProductImage> imageList = new ArrayList<>();
 
-  public void changePrice(int price) {
-    this.price = price;
-  }
+    /** 삭제 여부 변경 */
+    public void changeDel(boolean delFlag) {
+        this.delFlag = delFlag;
+    }
 
-  public void changeDesc(String desc){
-      this.pdesc = desc;
-  }
+    /** 가격 변경 */
+    public void changePrice(int price) {
+        this.price = price;
+    }
 
-  public void changeName(String name){
-      this.pname = name;
-  }
+    /** 할인가 변경 */
+    public void changeSalePrice(Integer salePrice) {
+        this.salePrice = salePrice;
+    }
 
-  public void addImage(ProductImage image) {
+    /** 할인율 변경 */
+    public void changeDiscountRate(Integer discountRate) {
+        this.discountRate = discountRate;
+    }
 
-      image.setOrd(this.imageList.size());
-      imageList.add(image);
-  }
+    /** 설명 변경 */
+    public void changeDesc(String desc) {
+        this.pdesc = desc;
+    }
 
-  public void addImageString(String fileName){
+    /** 이름 변경 */
+    public void changeName(String name) {
+        this.pname = name;
+    }
 
-    ProductImage productImage = ProductImage.builder()
-    .fileName(fileName)
-    .build();
-    addImage(productImage);
+    /** 브랜드 변경 */
+    public void changeBrand(String brand) {
+        this.brand = brand;
+    }
 
-  }
+    /** 이미지 추가 */
+    public void addImage(ProductImage image) {
+        image.setOrd(this.imageList.size());
+        imageList.add(image);
+    }
 
-  public void clearList() {
-      this.imageList.clear();
-  }
+    /** 파일명으로 이미지 추가 */
+    public void addImageString(String fileName) {
+        ProductImage productImage = ProductImage.builder()
+                .fileName(fileName)
+                .build();
+        addImage(productImage);
+    }
+
+    /** 이미지 리스트 초기화 */
+    public void clearList() {
+        this.imageList.clear();
+    }
 }
