@@ -22,83 +22,66 @@ const BRAND_CATEGORIES = [
   { label: "편의점", items: ["GS25", "CU"] },
 ];
 
-const initState = {
-  dtoList: [],
-  pageNumList: [],
-  pageRequestDTO: null,
-  prev: false,
-  next: false,
-  totoalCount: 0,
-  prevPage: 0,
-  nextPage: 0,
-  totalPage: 0,
-  current: 0,
-};
-
 const ListComponent = () => {
-  const { page, size, refresh, moveToRead } = useCustomMove();
+  const { moveToRead } = useCustomMove();
   const { exceptionHandle } = useCustomLogin();
 
-  const [serverData, setServerData] = useState(initState);
+  const [dtoList, setDtoList] = useState([]);
   const [fetching, setFetching] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const [brandFilter, setBrandFilter] = useState(null);
   const [sortKey, setSortKey] = useState("low");
-  const [visibleCount, setVisibleCount] = useState(20);
 
-  // 상품 목록 로딩
+  const [page, setPage] = useState(1);
+  const size = 10;
+
   useEffect(() => {
     setFetching(true);
-    console.log("📦 Calling getList with params:", { page, size });
 
     getList({ page, size })
       .then((data) => {
-        console.log("✅ getList response:", data);
-        setServerData(data);
-        setVisibleCount(20);
+        if (!data.dtoList || data.dtoList.length === 0) {
+          setHasMore(false);
+        } else {
+          setDtoList((prev) => [...prev, ...data.dtoList]);
+        }
         setFetching(false);
       })
       .catch((err) => {
-        console.error("❌ getList error:", err);
         exceptionHandle(err);
+        setFetching(false);
       });
-  }, [page, size, refresh, brandFilter, sortKey]);
+  }, [page]);
 
-  // 무한스크롤 처리
   useEffect(() => {
     const handleScroll = () => {
       if (
         window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100 &&
+          document.body.offsetHeight - 150 &&
         !fetching &&
-        visibleCount < (serverData.dtoList?.length ?? 0)
+        hasMore
       ) {
-        setFetching(true);
-        setTimeout(() => {
-          setVisibleCount((prev) => prev + 20);
-          setFetching(false);
-        }, 500);
+        setPage((prev) => prev + 1);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [fetching, visibleCount, serverData.dtoList?.length]);
+  }, [fetching, hasMore]);
 
   const sortFns = {
     low: (a, b) => a.price - b.price,
     high: (a, b) => b.price - a.price,
   };
 
-  const filteredAndSorted = (serverData.dtoList || [])
+  const filteredAndSorted = dtoList
     .filter((p) =>
       brandFilter
         ? p.brand === brandFilter || p.pname.includes(brandFilter)
         : true
     )
     .sort(sortFns[sortKey]);
-
-  const displayedItems = filteredAndSorted.slice(0, visibleCount);
 
   return (
     <>
@@ -110,7 +93,6 @@ const ListComponent = () => {
       <div className="selling-page">
         {fetching && <FetchingModal />}
 
-        {/* 카테고리 필터 */}
         <div className="category-menu">
           <div className="category-column">
             <h4>전체</h4>
@@ -144,7 +126,6 @@ const ListComponent = () => {
           ))}
         </div>
 
-        {/* 정렬 옵션 */}
         <ul className="sort-menu">
           {SORT_OPTIONS.map((opt) => (
             <li
@@ -157,9 +138,8 @@ const ListComponent = () => {
           ))}
         </ul>
 
-        {/* 상품 리스트 */}
         <ul className="product-list">
-          {displayedItems.map((product) => {
+          {filteredAndSorted.map((product) => {
             const hasDiscount =
               product.salePrice != null &&
               product.discountRate != null &&
@@ -170,6 +150,7 @@ const ListComponent = () => {
                 key={product.pno}
                 className="product-card"
                 onClick={() => moveToRead(product.pno)}
+                style={{ cursor: "pointer" }}
               >
                 <div className="product-link">
                   {product.uploadFileNames?.length > 0 && (
@@ -193,7 +174,7 @@ const ListComponent = () => {
                         {product.salePrice.toLocaleString()}원
                       </span>
                       <span className="original-price">
-                        {product.price.toLocaleString()}원
+                        <s>{product.price.toLocaleString()}원</s>
                       </span>
                     </p>
                   ) : (
@@ -206,8 +187,11 @@ const ListComponent = () => {
             );
           })}
 
-          {displayedItems.length === 0 && (
+          {!fetching && filteredAndSorted.length === 0 && (
             <li className="no-items">선택한 브랜드의 상품이 없습니다.</li>
+          )}
+          {!hasMore && filteredAndSorted.length > 0 && (
+            <li className="no-more">더 이상 불러올 상품이 없습니다.</li>
           )}
         </ul>
       </div>

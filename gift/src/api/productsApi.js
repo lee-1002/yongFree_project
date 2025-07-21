@@ -25,7 +25,7 @@ export const getList = async (pageParam) => {
 
 // 조회
 export const getOne = async (pno) => {
-  const res = await axios.get(`${host}/${pno}`);
+  const res = await jwtAxios.get(`${host}/${pno}`);
 
   return res.data;
 };

@@ -10,16 +10,19 @@ import useCustomCart from "../../hooks/useCustomCart";
 const initState = {
   pno: 0,
   pname: "",
+  brand: "",
   pdesc: "",
   price: 0,
+  discountRate: 0,
+  salePrice: 0,
   uploadFileNames: [],
 };
 
 const host = API_SERVER_HOST;
 
 const ReadComponent = () => {
-  const { pno } = useParams(); // ✅ URL 파라미터에서 pno 추출
-  const numPno = parseInt(pno); // 문자열을 숫자로 변환
+  const { pno } = useParams();
+  const numPno = parseInt(pno);
 
   const [product, setProduct] = useState(initState);
   const [error, setError] = useState(null);
@@ -86,6 +89,12 @@ const ReadComponent = () => {
     );
   }
 
+  // 할인 여부 판단
+  const hasDiscount =
+    product.salePrice != null &&
+    product.discountRate != null &&
+    product.discountRate > 0;
+
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4">
       {fetching && <FetchingModal />}
@@ -101,20 +110,47 @@ const ReadComponent = () => {
 
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
+          <div className="w-1/5 p-6 text-right font-bold">BRAND</div>
+          <div className="w-4/5 p-6 rounded-r border border-solid shadow-md">
+            {product.brand}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center">
+        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
           <div className="w-1/5 p-6 text-right font-bold">PNAME</div>
           <div className="w-4/5 p-6 rounded-r border border-solid shadow-md">
             {product.pname}
           </div>
         </div>
       </div>
+
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
           <div className="w-1/5 p-6 text-right font-bold">PRICE</div>
           <div className="w-4/5 p-6 rounded-r border border-solid shadow-md">
-            {product.price}
+            {hasDiscount ? (
+              <>
+                <span className="text-red-600 font-bold mr-2">
+                  할인율: ~{product.discountRate}%
+                </span>
+                <span className="text-green-600 font-bold mr-4">
+                  할인가: {product.salePrice.toLocaleString()}원
+                </span>
+                <span className="line-through text-gray-500">
+                  정가: {product.price.toLocaleString()}원
+                </span>
+              </>
+            ) : (
+              <span>
+                {product.price?.toLocaleString() ?? "가격 정보 없음"}원
+              </span>
+            )}
           </div>
         </div>
       </div>
+
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
           <div className="w-1/5 p-6 text-right font-bold">PDESC</div>
@@ -123,6 +159,7 @@ const ReadComponent = () => {
           </div>
         </div>
       </div>
+
       <div className="w-full justify-center flex flex-col m-auto items-center">
         {product.uploadFileNames.map((imgFile, i) => (
           <img
