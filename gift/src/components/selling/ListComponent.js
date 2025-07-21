@@ -149,7 +149,7 @@ const ListComponent = () => {
               <li
                 key={product.pno}
                 className="product-card"
-                onClick={() => moveToRead(product.pno)}
+                onClick={() => moveToRead(product.pno, "/selling")}
                 style={{ cursor: "pointer" }}
               >
                 <div className="product-link">

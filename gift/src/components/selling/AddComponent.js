@@ -83,7 +83,7 @@ const AddComponent = () => {
 
   const closeModal = () => {
     setResult(null);
-    moveToList({ page: 1 });
+    moveToList("/products", { page: 1 }); // basePath 추가
   };
 
   return (

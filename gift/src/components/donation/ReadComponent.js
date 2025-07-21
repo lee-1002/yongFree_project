@@ -11,24 +11,25 @@ const initState = {
 };
 
 const ReadComponent = ({ tno }) => {
-  const [todo, setTodo] = useState(initState); //아직 todo는 사용하지 않음
+  const [donationBoard, setDonationBoard] = useState(initState); //아직 DonationBoard는 사용하지 않음
 
   const { moveToList, moveToModify } = useCustomMove();
 
   useEffect(() => {
     getOne(tno).then((data) => {
       console.log(data);
-      setTodo(data);
+      setDonationBoard(data);
     });
   }, [tno]);
 
   return (
     <div className="border-2 border-sky-200 mt-10 m-2 p-4 ">
-      {makeDiv("Tno", todo.tno)}
-      {makeDiv("Writer", todo.writer)}
-      {makeDiv("Title", todo.title)}
-      {makeDiv("Due Date", todo.dueDate)}
-      {makeDiv("Complete", todo.complete ? "Completed" : "Not Yet")}
+      {makeDiv("Tno", donationBoard.tno)}
+      {makeDiv("Writer", donationBoard.writer)}
+      {makeDiv("Title", donationBoard.title)}
+      {makeDiv("Due Date", donationBoard.dueDate)}
+      {makeDiv("Content", donationBoard.content)}
+      {makeDiv("Complete", donationBoard.complete ? "Completed" : "Not Yet")}
 
       {/* buttons.........start */}
       <div className="flex justify-end p-4">

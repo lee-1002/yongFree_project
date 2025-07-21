@@ -22,8 +22,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
   @Query("update Product p set p.delFlag = :flag where p.pno = :pno")
   void updateToDelete(@Param("pno") Long pno, @Param("flag") boolean flag);
 
-  // 상품하나당 이미지 하나의 목록이 보이게 하기 위함. 
-    @Query("select p, pi  from Product p left join p.imageList pi  where pi.ord = 0 and p.delFlag = false ")
-  Page<Object[]> selectList(Pageable pageable);
+  @Query("select p, pi from Product p left join p.imageList pi " +
+  "where pi.ord = 0 and p.delFlag = false " +
+  "and (:keyword is null or :keyword = '' " +
+  "or p.pname like %:keyword% " +
+  "or p.pdesc like %:keyword% " +
+  "or p.brand like %:keyword%)")
+Page<Object[]> selectList(Pageable pageable, @Param("keyword") String keyword);
   
 }

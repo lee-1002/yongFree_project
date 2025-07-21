@@ -99,7 +99,8 @@ public class ProductRepositoryTests {
     //org.springframework.data.domain 패키지
     Pageable pageable = PageRequest.of(0, 10, Sort.by("pno").descending());
 
-    Page<Object[]> result = productRepository.selectList(pageable);
+    // Page<Object[]> result = productRepository.selectList(pageable);
+    Page<Object[]> result = productRepository.selectList(pageable, null);
 
     //java.util
     result.getContent().forEach(arr -> log.info(Arrays.toString(arr)));

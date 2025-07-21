@@ -17,15 +17,15 @@ const initState = {
 };
 
 const ListComponent = () => {
-  const { page, size, refresh, moveToList, moveToRead } = useCustomMove();
+  const { page, size, refresh, moveToList, moveToRead, setRefresh } =
+    useCustomMove();
 
   const [serverData, setServerData] = useState(initState);
 
   useEffect(() => {
     getList({ page, size })
       .then((data) => {
-        console.log("API 응답 데이터:", data); // ① 여기서 실제 응답 데이터 구조 확인
-        // data가 객체이고, dtoList 속성이 있으며, dtoList가 배열인지 확인
+        console.log("API 응답 데이터:", data);
         if (data && Array.isArray(data.dtoList)) {
           setServerData(data);
         } else {
@@ -53,7 +53,7 @@ const ListComponent = () => {
             <div
               key={donationBoard.tno}
               className="w-full min-w-[400px]  p-2 m-2 rounded shadow-md"
-              onClick={() => moveToRead(donationBoard.tno)}
+              onClick={() => moveToRead(donationBoard.tno, "/donationBoard")}
             >
               <div className="flex ">
                 <div className="font-extrabold text-2xl p-2 w-1/12">
@@ -77,7 +77,7 @@ const ListComponent = () => {
       </div>
       <PageComponent
         serverData={serverData}
-        movePage={moveToList}
+        movePage={(pageNum) => moveToList("/donationBoard", { page: pageNum })}
       ></PageComponent>
     </div>
   );

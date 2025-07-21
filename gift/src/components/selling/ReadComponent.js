@@ -80,7 +80,7 @@ const ReadComponent = () => {
           <button
             type="button"
             className="rounded p-4 m-2 text-xl w-32 text-white bg-blue-500"
-            onClick={moveToList}
+            onClick={() => moveToList("/selling")}
           >
             List
           </button>
@@ -182,14 +182,14 @@ const ReadComponent = () => {
         <button
           type="button"
           className="inline-block rounded p-4 m-2 text-xl w-32 text-white bg-red-500"
-          onClick={() => moveToModify(numPno)}
+          onClick={() => moveToModify(numPno, "/selling")}
         >
           Modify
         </button>
         <button
           type="button"
           className="rounded p-4 m-2 text-xl w-32 text-white bg-blue-500"
-          onClick={moveToList}
+          onClick={() => moveToList("/selling")}
         >
           List
         </button>
