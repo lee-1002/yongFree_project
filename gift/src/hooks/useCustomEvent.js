@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { getEvents, addEvent as apiAddEvent, patchToggleEventStatus, deleteEventById } from "../api/eventApi";
+import {
+  getEvents,
+  getEventById, // ★ 추가: getEventById 함수 import
+  addEvent as apiAddEvent,
+  patchToggleEventStatus,
+  deleteEventById,
+} from "../api/eventApi";
 
 const useCustomEvent = () => {
   const [events, setEvents] = useState([]);
@@ -7,7 +13,7 @@ const useCustomEvent = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchEvent = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -19,7 +25,7 @@ const useCustomEvent = () => {
         setLoading(false);
       }
     };
-    fetchEvents();
+    fetchEvent();
   }, []);
 
   // 이벤트 추가
@@ -57,7 +63,27 @@ const useCustomEvent = () => {
     }
   };
 
-  return { events, loading, error, addEvent, toggleEvent, deleteEvent };
+  // ★ 추가: 단일 이벤트 조회 함수
+  const getEvent = async (id) => {
+    setError(null);
+    try {
+      const event = await getEventById(id);
+      return event;
+    } catch (e) {
+      setError(e.message);
+      return null;
+    }
+  };
+
+  return {
+    events,
+    loading,
+    error,
+    addEvent,
+    toggleEvent,
+    deleteEvent,
+    getEvent,
+  }; // ★ getEvent 추가
 };
 
 export default useCustomEvent;

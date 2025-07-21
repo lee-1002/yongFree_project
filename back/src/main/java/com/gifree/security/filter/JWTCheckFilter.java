@@ -32,7 +32,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     if (path.startsWith("/api/member/")) return true;
     if (path.startsWith("/api/products/view/")) return true;
     if (path.startsWith("/api/events/")) return true;
-    if (path.startsWith("/api/donation/")) return true;
+    if (path.startsWith("/api/donationBoard/")) return true;
+    if (path.startsWith("/api/products/")) return true; 
+    if (path.startsWith("/api/events/")) return true; 
 
     return false;
   }

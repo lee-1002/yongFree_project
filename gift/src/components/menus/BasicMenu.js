@@ -409,7 +409,7 @@ const BasicMenu = () => {
             </li>
             <li>
               <Link
-                to="/donation"
+                to="/donationBoard"
                 className="text-gray-700 font-medium hover:text-blue-500"
               >
                 기부

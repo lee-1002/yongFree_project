@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getOne } from "../../api/todoApi";
+import { getOne } from "../../api/donationBoardApi";
 import useCustomMove from "../../hooks/useCustomMove";
 
 const initState = {

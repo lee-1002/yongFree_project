@@ -7,7 +7,7 @@ const EventAdd = lazy(() => import("../pages/event/EventAddPage.js"));
 const eventRouter = () => {
   return [
     {
-      path: "/event",
+      path: "",
       element: (
         <Suspense fallback={Loading}>
           <Event />
@@ -15,7 +15,7 @@ const eventRouter = () => {
       ),
     },
     {
-      path: "/event/:id",
+      path: ":id",
       element: (
         <Suspense fallback={Loading}>
           <EventRead />
@@ -23,7 +23,7 @@ const eventRouter = () => {
       ),
     },
     {
-      path: "/event/add",
+      path: "add",
       element: (
         <Suspense fallback={Loading}>
           <EventAdd />

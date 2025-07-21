@@ -97,9 +97,9 @@ const EventListComponent = () => {
 
                 {/* 새로 추가된 가게명과 주소 */}
                 <div className="store-info">
-                  <strong>가게명:</strong> {event.store_name || "정보 없음"}
+                  <strong>가게명:</strong> {event.storeName || "정보 없음"}
                   <br />
-                  <strong>주소:</strong> {event.store_address || "정보 없음"}
+                  <strong>주소:</strong> {event.storeAddress || "정보 없음"}
                 </div>
 
                 <button onClick={() => handleToggle(event.id)}>

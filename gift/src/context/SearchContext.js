@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import * as productsApi from "../api/productsApi";
 
 const SearchContext = createContext();
 export const useSearch = () => useContext(SearchContext);
@@ -23,13 +24,15 @@ export const SearchProvider = ({ children }) => {
 
   useEffect(() => {
     setIsInitialLoading(true);
-    axios
-      .get("http://localhost:8080/api/products")
+    // axios.get("http://localhost:8080/api/products");
+    productsApi
+      .getList({ page: 1, size: 20 })
       .then((res) => {
-        setInitialProducts(res.data);
+        setInitialProducts(res.dtoList);
       })
       .catch((err) => {
         console.error("초기 상품 목록 로딩 에러:", err);
+        setInitialProducts([]);
       })
       .finally(() => {
         setIsInitialLoading(false);
@@ -41,10 +44,12 @@ export const SearchProvider = ({ children }) => {
     async (query) => {
       // 쿼리가 비어있으면 검색 대신 displayTerm 초기화 및 검색 결과 비움
       if (!query || !query.trim()) {
-        setDisplayTerm(""); // 검색어 상태 초기화
-        setSearchResults([]); // 검색 결과도 비워줌
-        // navigate("/search/list"); // 필요한 경우 다시 전체 목록 페이지로 이동 (이미 list 페이지에 있다면 불필요할 수 있음)
-        setIsLoading(false); // 로딩 상태 종료
+        setDisplayTerm("");
+        setSearchResults([]);
+        setIsLoading(false);
+        setDisplayTerm("");
+        setSearchResults([]);
+        setIsLoading(false);
         return;
       }
 
@@ -52,15 +57,17 @@ export const SearchProvider = ({ children }) => {
       setIsLoading(true);
 
       try {
-        // 실제 Gifree 자바 백엔드의 검색 API 주소를 사용* 엔드포인트랑 포트번호 확인
-        const response = await axios.get(
-          `http://localhost:8080/api/products?query=${query}`
-        );
-        setSearchResults(response.data);
+        const response = await productsApi.getList({
+          page: 1, // 검색 결과의 기본 페이지
+          size: 20, // 검색 결과의 기본 사이즈
+          keyword: query, // 검색어를 'keyword' 파라미터로 전달
+        });
+        // 백엔드가 PageResponseDTO를 반환하므로 response.dtoList에 실제 데이터가 있습니다.
+        setSearchResults(response.dtoList);
         navigate("/search/list");
       } catch (error) {
         console.error("상품 검색 에러:", error);
-        setSearchResults([]);
+        setSearchResults([]); // 에러 시 검색 결과를 빈 배열로 설정
       } finally {
         setIsLoading(false);
       }

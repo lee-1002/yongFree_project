@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -22,6 +23,8 @@ import com.gifree.security.handler.CustomAccessDeniedHandler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import org.springframework.http.HttpStatus;// HttpStatus 임포트
 
 @Configuration
 @Log4j2
@@ -42,10 +45,17 @@ public class CustomSecurityConfig {
     http.cors(httpSecurityCorsConfigurer -> {
       httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
     });
-
+//추가
     http.authorizeHttpRequests(auth -> auth
-    .requestMatchers("/api/events/**").permitAll()
-    .requestMatchers("/api/donation/**").permitAll()  // 인증 없이 허용
+    .requestMatchers(
+      "/api/member/login", // 로그인 엔드포인트는 항상 허용
+      "/api/member/kakao", // 카카오 로그인 엔드포인트도 허용 (필요하다면)
+      "/api/products/list", // <-- 상품 목록 조회 허용 (가장 중요!)
+      "/api/products/view/*", // <-- 상품 이미지 조회 허용 (가장 중요!)
+      "/api/events/**",
+      "/api/donationBoard/**",
+      "/api/events/**"
+  ).permitAll() 
     .anyRequest().authenticated()
 );
 
@@ -62,8 +72,11 @@ public class CustomSecurityConfig {
 
     http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class); //JWT 체크
 
-     http.exceptionHandling(config -> {config.accessDeniedHandler(new CustomAccessDeniedHandler());
-    });
+     http.exceptionHandling(config -> { config.accessDeniedHandler(new CustomAccessDeniedHandler());
+      //추가
+            // 인증되지 않은 사용자가 보호된 리소스에 접근 시 401 Unauthorized 반환 (302 리다이렉트 방지)
+            config.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+        });
     return http.build();
   }
 

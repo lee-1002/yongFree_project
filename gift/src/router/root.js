@@ -49,11 +49,6 @@ const root = createBrowserRouter([
       },
       {
         path: "event",
-        element: (
-          <Suspense fallback={Loading}>
-            <EventPage />
-          </Suspense>
-        ),
         children: eventRouter(),
       },
 
@@ -66,7 +61,7 @@ const root = createBrowserRouter([
         children: sellingRouter(),
       },
       {
-        path: "donation",
+        path: "donationBoard",
         children: donationRouter(),
       },
       {

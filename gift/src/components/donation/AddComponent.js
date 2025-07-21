@@ -54,14 +54,11 @@ const AddComponent = () => {
   return (
     <div className="border-2 border-sky-200 mt-10 p-4 mx-auto max-w-4xl px-12">
       {" "}
-      {/* max-w-4xl로 늘리고 px-12 (48px) 적용 */}
       {/* 모달 처리 */}
       <p className="text-2xl font-bold mb-6 text-center">게시글 작성</p>
       <div className="space-y-4">
         {/* 작성자 (Writer) */}
         <div className="flex flex-col items-start w-full">
-          {" "}
-          {/* mx-auto max-w-lg 제거하고 w-full 적용 */}
           <div className="p-1 font-bold">작성자</div>
           <input
             className="w-full p-3 rounded-md border border-solid border-neutral-300 focus:border-blue-500 focus:ring focus:ring-blue-200 shadow-sm"
@@ -75,8 +72,6 @@ const AddComponent = () => {
 
         {/* 제목 (Title) */}
         <div className="flex flex-col items-start w-full">
-          {" "}
-          {/* mx-auto max-w-lg 제거하고 w-full 적용 */}
           <div className="p-1 font-bold">제목</div>
           <input
             className="w-full p-3 rounded-md border border-solid border-neutral-300 focus:border-blue-500 focus:ring focus:ring-blue-200 shadow-sm"
@@ -90,15 +85,13 @@ const AddComponent = () => {
 
         {/* 내용 (Content) */}
         <div className="flex flex-col items-start w-full">
-          {" "}
-          {/* mx-auto max-w-lg 제거하고 w-full 적용 */}
           <div className="p-1 font-bold">내용</div>
           <Quill
             className="w-full border border-solid border-neutral-300 rounded-md shadow-sm"
             style={{ height: "700px" }}
-            theme="snow" // 툴바와 에디터 영역이 분리된 테마
-            value={donationBoard.content} // donationBoard 상태의 content와 연결
-            onChange={handleQuillChange} // 내용 변경 시 handleQuillChange 호출
+            theme="snow"
+            value={donationBoard.content}
+            onChange={handleQuillChange}
             placeholder="내용을 입력해주세요."
             modules={{
               toolbar: [
@@ -129,7 +122,6 @@ const AddComponent = () => {
           />
           {/* Quill 에디터의 높이 문제 해결을 위한 공간 (Quill 자체 height가 커졌으므로 조정) */}
           <div className="h-4"></div>{" "}
-          {/* 700px로 늘렸기 때문에 h-12에서 h-4로 줄임 */}
         </div>
       </div>
       <div className="flex justify-center mt-6 text-gray-600">

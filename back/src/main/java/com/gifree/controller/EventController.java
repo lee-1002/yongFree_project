@@ -3,12 +3,15 @@ package com.gifree.controller;
 import com.gifree.domain.Event;
 import com.gifree.dto.EventDTO;
 import com.gifree.service.EventService;
+
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Log4j2
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
@@ -26,16 +29,23 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        return eventService.getEventById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        log.info("단일 이벤트 조회 요청: id = {}", id);
+        var eventOpt = eventService.getEventById(id);
+        if(eventOpt.isEmpty()) {
+            log.warn("이벤트를 찾을 수 없습니다. id = {}", id);
+            return ResponseEntity.notFound().build();
+        }
+        log.info("이벤트 조회 성공: id = {}", id);
+        return ResponseEntity.ok(eventOpt.get());
     }
+
 
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO dto) {
         Event event = convertToEntity(dto);
         return ResponseEntity.ok(eventService.createEvent(event));
     }
+    
 
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
@@ -80,4 +90,4 @@ public class EventController {
         if (dateTimeStr == null || dateTimeStr.isEmpty()) return null;
         return LocalDateTime.parse(dateTimeStr.replace(" ", "T"));
     }
-} 
+}

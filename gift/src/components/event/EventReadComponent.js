@@ -13,6 +13,7 @@ const EventReadComponent = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("params id:", id);
     if (!id) return;
 
     const fetchEvent = async () => {
@@ -75,7 +76,8 @@ const EventReadComponent = () => {
             <div className="info-item">
               <label>기간</label>
               <div>
-                {formatShortDate(event.startDate)} ~ {formatShortDate(event.endDate)}
+                {formatShortDate(event.startDate)} ~{" "}
+                {formatShortDate(event.endDate)}
               </div>
             </div>
           </div>

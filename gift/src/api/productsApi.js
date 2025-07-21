@@ -16,7 +16,7 @@ export const postAdd = async (product) => {
 export const getList = async (pageParam) => {
   const { page, size } = pageParam;
 
-  const res = await jwtAxios.get(`${host}/list`, {
+  const res = await axios.get(`${host}/list`, {
     params: { page: page, size: size },
   });
 
@@ -25,7 +25,7 @@ export const getList = async (pageParam) => {
 
 // 조회
 export const getOne = async (pno) => {
-  const res = await jwtAxios.get(`${host}/${pno}`);
+  const res = await axios.get(`${host}/${pno}`);
 
   return res.data;
 };
