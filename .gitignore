@@ -19,12 +19,24 @@ node_modules/
 # IDE 설정 폴더
 .vscode/
 .idea/
+*.iml
 
 # Gradle 빌드 결과물
-/build/
-/build/libs/
-/*.jar
+.gradle/
+build/
+build/
+build/libs/
 *.jar
+*.class
+*.log
 
+# 기타 불필요한 캐시/로그
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Gradle 실행 기록 및 캐시
+**/executionHistory/
+**/file-system.probe
 
 # 여기에 파일 명을 적으면 해당 파일은 Git에 추적되지 않아 commit, push 시 올라가지 않습니다.
