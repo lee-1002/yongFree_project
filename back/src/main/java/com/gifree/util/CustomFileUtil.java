@@ -48,6 +48,10 @@ public class CustomFileUtil {
 
       try {
         Files.copy(file.getInputStream(), savePath);
+           // ✅ 저장 완료 후 확인
+      log.info("✅ 파일 저장 완료: " + savedName);
+      log.info("✅ 파일 크기: " + Files.size(savePath) + " bytes");
+      log.info("✅ 파일 존재 여부: " + Files.exists(savePath));
 
         if (file.getContentType() != null && file.getContentType().startsWith("image")) {
           Path thumbnailPath = Paths.get(uploadPath, "s_" + savedName);
