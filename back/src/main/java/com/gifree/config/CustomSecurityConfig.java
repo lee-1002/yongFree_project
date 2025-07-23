@@ -54,7 +54,7 @@ public class CustomSecurityConfig {
       "/api/products/view/*", // <-- 상품 이미지 조회 허용 (가장 중요!)
       "/api/events/**",
       "/api/donationBoard/**",
-      "/api/events/**"
+      "/files/**"
   ).permitAll() 
     .anyRequest().authenticated()
 );

@@ -34,7 +34,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     if (path.startsWith("/api/events/")) return true;
     if (path.startsWith("/api/donationBoard/")) return true;
     if (path.startsWith("/api/products/")) return true; 
-    if (path.startsWith("/api/events/")) return true; 
+    if (path.startsWith("/files/")) return true;
 
     return false;
   }
@@ -47,12 +47,21 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
     String authHeaderStr = request.getHeader("Authorization");
 
-    // ✅ 헤더가 없거나 잘못된 경우 그냥 통과 (로그인 안 된 사용자)
-    if (authHeaderStr == null || !authHeaderStr.startsWith("Bearer ")) {
-      log.warn("Authorization header missing or invalid");
-      filterChain.doFilter(request, response);
-      return;
-    }
+    log.info("Authorization Header: {}", authHeaderStr); // 헤더 값 확인
+
+        if (authHeaderStr == null || !authHeaderStr.startsWith("Bearer ")) {
+            log.warn("Authorization header missing or invalid for URI: {}", request.getRequestURI()); // 
+            // 여기서 바로 401 에러 응답을 보냅니다.
+            Gson gson = new Gson();
+            String msg = gson.toJson(Map.of("error", "ERROR_ACCESS_TOKEN")); // 또는 "REQUIRE_LOGIN"
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            PrintWriter printWriter = response.getWriter();
+            printWriter.println(msg);
+            printWriter.close();
+            return; // 요청 처리를 여기서 중단합니다.
+        }
 
     try {
       // Bearer 토큰 추출

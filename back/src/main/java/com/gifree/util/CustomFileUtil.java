@@ -65,21 +65,35 @@ public class CustomFileUtil {
   }
 
   public ResponseEntity<Resource> getFile(String filename) {
+    log.info("### getFile 요청 - 파일명: " + filename); // 요청 도달 확인
     Resource resource = new FileSystemResource(uploadPath + File.separator + filename);
 
-    if (!resource.exists() || !resource.isReadable()) {
-      return ResponseEntity.notFound().build();
+    if (!resource.exists()) {
+        log.warn("### getFile 경고 - 파일이 존재하지 않음: " + resource.getDescription());
+        return ResponseEntity.notFound().build();
+    }
+    if (!resource.isReadable()) {
+        log.warn("### getFile 경고 - 파일을 읽을 수 없음 (권한 문제?): " + resource.getDescription());
+        return ResponseEntity.internalServerError().build(); // 또는 notFound().build()
     }
 
     HttpHeaders headers = new HttpHeaders();
     try {
-      headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
+        String contentType = Files.probeContentType(resource.getFile().toPath());
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // 기본값 설정
+            log.warn("### getFile 경고 - Content-Type 결정 불가, 기본값 사용: " + filename);
+        }
+        headers.add("Content-Type", contentType);
     } catch (IOException e) {
-      return ResponseEntity.internalServerError().build();
+        log.error("### getFile 에러 - Content-Type 결정 중 오류:", e);
+        return ResponseEntity.internalServerError().build();
     }
-
+    log.info("### getFile 성공 - 파일 전송: " + filename + ", Content-Type: " + headers.getFirst("Content-Type"));
     return ResponseEntity.ok().headers(headers).body(resource);
-  }
+}
+
+
 
   public void deleteFiles(List<String> fileNames) {
     if (fileNames == null || fileNames.isEmpty()) return;

@@ -20,7 +20,7 @@ const useCustomMove = () => {
   };
 
   // List 페이지 이동 함수
-  const moveToList = (basePath, params) => {
+  const moveToList = (basePath, params, useListSuffix = true) => {
     // basePath 인자 추가
     if (!basePath) {
       console.error("moveToList: basePath가 제공되지 않았습니다.");
@@ -31,11 +31,29 @@ const useCustomMove = () => {
     setPage(currentPage); // 페이지 상태 업데이트
     setSize(currentSize); // 사이즈 상태 업데이트
 
-    // `basePath`를 사용하여 동적으로 경로를 구성
-    navigate(`${basePath}/list?page=${currentPage}&size=${currentSize}`);
+    const targetPath = `${basePath}?page=${currentPage}&size=${currentSize}`;
+
+    navigate(targetPath);
   };
 
-  return { page, size, refresh, setRefresh, moveToRead, moveToList };
+  const moveToModify = (num, basePath) => {
+    if (!basePath) {
+      console.error("moveToModify: basePath가 제공되지 않았습니다.");
+      return;
+    }
+    // modify 경로로 이동하며, 게시글 번호(num)를 포함
+    navigate(`${basePath}/modify/${num}?page=${page}&size=${size}`);
+  };
+
+  return {
+    page,
+    size,
+    refresh,
+    setRefresh,
+    moveToRead,
+    moveToList,
+    moveToModify,
+  };
 };
 
 export default useCustomMove;

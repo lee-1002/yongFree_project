@@ -1,5 +1,6 @@
 package com.gifree.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +30,14 @@ public class DonationBoardController {
 
     private final DonationBoardService service;
 
+    @GetMapping("/recent")
+    public List<DonationBoardDTO> getRecentList() {
+        log.info("Fetching recent donation board posts");
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(5).build();
+        PageResponseDTO<DonationBoardDTO> pageResponseDTO = service.list(pageRequestDTO);
+        return pageResponseDTO.getDtoList();
+    }
+
     @GetMapping("/{tno}")
   public DonationBoardDTO get(@PathVariable(name ="tno") Long tno) {
 
@@ -43,28 +52,24 @@ public class DonationBoardController {
     return service.list(pageRequestDTO);
   }
 
-      @PostMapping("/")
-  public Map<String, Long> register(@RequestBody DonationBoardDTO donationBoardDTO){
-   
-    log.info("DonationBoardDTO: " + donationBoardDTO);
+  @PostMapping("/")
+    public Map<String, Long> register(@RequestBody DonationBoardDTO donationBoardDTO) {
+        log.info("Register DTO: " + donationBoardDTO); // content가 잘 들어오는지 확인
+        Long tno = service.register(donationBoardDTO);
+        return Map.of("TNO", tno);
+    }
 
-    Long tno = service.register(donationBoardDTO);
-    
-    return Map.of("TNO", tno);
-  }
+
     @PutMapping("/{tno}")
-  public Map<String, String> modify( 
-    @PathVariable(name="tno") Long tno, 
-    @RequestBody DonationBoardDTO donationBoardDTO) {
-
-    donationBoardDTO.setTno(tno);
-
-    log.info("Modify: " + donationBoardDTO);
-
-    service.modify(donationBoardDTO);
-
-    return Map.of("RESULT", "SUCCESS");
-  }
+    public Map<String, String> modify(
+            @PathVariable("tno") Long tno,
+            @RequestBody DonationBoardDTO donationBoardDTO) {
+        donationBoardDTO.setTno(tno);
+        service.modify(donationBoardDTO);
+        // 파일 수정은 위 registerImageFiles API를 프론트에서 동일하게 호출하여 처리합니다.
+        return Map.of("RESULT", "SUCCESS");
+    }
+    
       @DeleteMapping("/{tno}")
   public Map<String, String> remove( @PathVariable(name="tno") Long tno ){
 
@@ -74,4 +79,11 @@ public class DonationBoardController {
 
     return Map.of("RESULT", "SUCCESS");
   }
+
+  @PostMapping("/{tno}/files")
+    public void registerImageFiles(@PathVariable("tno") Long tno, @RequestBody List<String> fileNames) {
+        log.info("Register files for tno: " + tno + ", files: " + fileNames);
+        service.addImageFiles(tno, fileNames);
+    }
+
 }
