@@ -75,6 +75,7 @@ const ModifyComponent = ({ tno }) => {
       }
     };
   }, []);
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -107,14 +108,19 @@ const ModifyComponent = ({ tno }) => {
   }, [tno]);
 
   const handleChangeDonationBoard = (e) => {
-    donationBoard[e.target.name] = e.target.value;
-    setDonationBoard({ ...donationBoard });
+    const { name, value } = e.target;
+    setDonationBoard((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleChangeDonationBoardComplete = (e) => {
     const value = e.target.value;
-    donationBoard.complete = value === "Y";
-    setDonationBoard({ ...donationBoard });
+    setDonationBoard((prev) => ({
+      ...prev,
+      complete: value === "Y",
+    }));
   };
 
   const handleClickModify = () => {
@@ -122,7 +128,6 @@ const ModifyComponent = ({ tno }) => {
       .then((data) => {
         console.log("modify text result: " + data);
 
-        // 2단계: 파일 정보를 이어서 수정합니다.
         const fileNames = donationBoard.uploadFileNames;
         if (fileNames && fileNames.length > 0) {
           addImageFilesForBoard(tno, fileNames)
@@ -162,7 +167,7 @@ const ModifyComponent = ({ tno }) => {
   };
 
   return (
-    <div className="border-2 border-sky-200 mt-10 m-2 p-4">
+    <div className="border-2 border-sky-200 mt-10 p-4 w-full">
       {result ? (
         <ResultModal
           title={"처리결과"}
@@ -172,70 +177,62 @@ const ModifyComponent = ({ tno }) => {
       ) : (
         <></>
       )}
-      <div className="flex justify-center mt-10"></div>
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">작성자</div>
-          <div className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100">
-            {donationBoard.writer}
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">제목</div>
+      <p className="text-2xl font-bold mb-6 text-center">게시글 수정</p>
+      <div className="space-y-4">
+        {/* 작성자 (Writer) - 읽기 전용 */}
+        <div className="flex flex-col items-start w-full">
+          <div className="p-1 font-bold">작성자</div>
           <input
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
+            className="w-full p-3 rounded-md border border-solid border-neutral-300 bg-gray-100 shadow-sm cursor-not-allowed"
+            name="writer"
+            type="text"
+            value={donationBoard.writer}
+            readOnly
+          />
+        </div>
+
+        {/* 제목 (Title) */}
+        <div className="flex flex-col items-start w-full">
+          <div className="p-1 font-bold">제목</div>
+          <input
+            className="w-full p-3 rounded-md border border-solid border-neutral-300 focus:border-blue-500 focus:ring focus:ring-blue-200 shadow-sm"
             name="title"
-            type={"text"}
+            type="text"
             value={donationBoard.title}
             onChange={handleChangeDonationBoard}
-          ></input>
+          />
         </div>
-      </div>
 
-      <div className="flex flex-col items-start w-full">
-        <div className="p-1 font-bold">내용</div>
-        <Quill
-          ref={quillRef}
-          className="w-full border border-solid border-neutral-300 rounded-md shadow-sm"
-          style={{ height: "700px" }}
-          theme="snow"
-          value={donationBoard.content}
-          onChange={handleQuillChange}
-          placeholder="내용을 입력해주세요."
-          modules={modules}
-          formats={[
-            "header",
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "list",
-            "bullet",
-            "align",
-            "link",
-            "image",
-            "color",
-            "background",
-            "clean",
-          ]}
-        />
-        <div className="h-4"></div>
-      </div>
-
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">COMPLETE</div>
-          <select
-            name="status"
-            className="border-solid border-2 rounded m-1 p-2"
-            onChange={handleChangeDonationBoardComplete}
-            value={donationBoard.complete ? "Y" : "N"}
-          >
-            <option value="Y">Completed</option>
-            <option value="N">Not Yet</option>
-          </select>
+        {/* 내용 (Content) */}
+        <div className="flex flex-col items-start w-full">
+          <div className="p-1 font-bold">내용</div>
+          <Quill
+            ref={quillRef}
+            className="w-full border border-solid border-neutral-300 rounded-md shadow-sm"
+            // style 속성에서 고정 높이를 제거하고, minHeight를 지정하여 최소 높이만 설정합니다.
+            style={{ height: "auto", minHeight: "300px" }}
+            theme="snow"
+            value={donationBoard.content}
+            onChange={handleQuillChange}
+            placeholder="내용을 입력해주세요."
+            modules={modules}
+            formats={[
+              "header",
+              "bold",
+              "italic",
+              "underline",
+              "strike",
+              "list",
+              "bullet",
+              "align",
+              "link",
+              "image",
+              "color",
+              "background",
+              "clean",
+            ]}
+          />
+          <div className="h-4"></div>
         </div>
       </div>
 

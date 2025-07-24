@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getList, getRecentList } from "../../api/donationBoardApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import PageComponent from "../common/PageComponent";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import RecentPostsSlider from "./RecentPostsSlider";
 import "./ListComponent.css";
+import { useNavigate } from "react-router-dom";
 
 const initState = {
   dtoList: [],
@@ -32,6 +33,11 @@ const ListComponent = () => {
   const { page, size, refresh, moveToList, moveToRead } = useCustomMove();
   const [serverData, setServerData] = useState(initState);
   const [recentPosts, setRecentPosts] = useState([]);
+  const navigate = useNavigate();
+
+  const handleClickAdd = useCallback(() => {
+    navigate({ pathname: "add" });
+  }, [navigate]);
 
   useEffect(() => {
     getList({ page, size: 12 })
@@ -78,6 +84,21 @@ const ListComponent = () => {
 
   return (
     <>
+      <div className="donationBoard-main-iamge-box">
+        <img src={"donationBoardMain.jpg"} alt="기부 페이지 메인 이미지" />
+        <div className="index-container">
+          <div className="donation-story-title-container">
+            <div className="donation-story-title">기부 스토리</div>
+            <div className="donation-story-title-sub">
+              작은 기부, 큰 변화의 시작
+            </div>
+          </div>
+        </div>
+      </div>
+      <button className="donation-write-button" onClick={handleClickAdd}>
+        글쓰기 (관리자 전용)
+      </button>
+
       <RecentPostsSlider />
       <div className="donation-board-container">
         <div className="donation-list-wrap">

@@ -1,3 +1,73 @@
+.donationBoard-main-iamge-box {
+  /* border: solid 1px red; */
+  display: flex;
+  height: 250px;
+  overflow: hidden; /* 넘치는 부분 숨김 */
+  position: relative;
+}
+
+.donationBoard-main-iamge-box img {
+  width: 100%; /* 가로 꽉 채우기 */
+  height: 100%; /* 세로 꽉 채우기 */
+  object-fit: cover; /* 이미지 비율 유지하며 잘라내기 */
+  object-position: 50% 20%; /* 이미지 상단 기준으로 정렬 */
+  display: block; /* inline 기본 공간 제거 */
+}
+
+.index-container {
+  position: absolute; /* 절대 위치 */
+  top: 20%; /* 이미지 상단에서 20% 아래 */
+  left: 50%; /* 가로 중앙 */
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff; /* 흰색 글씨 */
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.7); /* 글자 가독성 위해 그림자 추가 */
+  pointer-events: none; /* 버튼 등 클릭 방해 시 제거 가능 */
+  padding: 0 1rem;
+  user-select: none;
+}
+
+.donation-write-button {
+  position: relative;
+  pointer-events: auto;
+  user-select: auto;
+  /* transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease; */
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    /* box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); */
+    background: linear-gradient(135deg, #5a4cf5, #3b79ff);
+  }
+}
+
+.donation-story-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border: 2px red solid; */
+  gap: 10px;
+}
+
+.donation-story-title {
+  font-size: 2.5rem; /* 약간 키워서 강조 */
+  font-weight: 800;
+  color: #222;
+  letter-spacing: -0.5px;
+}
+.donation-story-title-sub {
+  font-size: 1.125rem;
+  color: #666;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 0.5rem;
+  /* letter-spacing: -0.2px; */
+  /* line-height: 1.6; */
+}
+
 .donation-board-container {
   border: 2px solid #bfdbfe;
   border-radius: 10px;
