@@ -16,9 +16,23 @@ export const getEventById = async (id) => {
 };
 
 // 이벤트 등록
-export const addEvent = async (eventData) => {
-  const res = await axios.post(host, eventData);
-  return res.data;
+export const addEvent = async (formData) => {
+  try {
+    const res = await axios.post(host, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("✅ 서버 응답:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error(
+      "❌ 이벤트 등록 실패:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 };
 
 // 이벤트 수정
