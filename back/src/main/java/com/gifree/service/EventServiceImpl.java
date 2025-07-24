@@ -3,6 +3,8 @@ package com.gifree.service;
 import com.gifree.domain.Event;
 import com.gifree.dto.PageRequestDTO;
 import com.gifree.repository.EventRepository;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +64,11 @@ public class EventServiceImpl implements EventService {
     public List<Event> getList(PageRequestDTO requestDTO) {
         int page = requestDTO.getPage() - 1;
         int size = requestDTO.getSize();
-        return eventRepository.findAll(PageRequest.of(page, size)).getContent();
+        
+        // DonationBoard처럼 역순 정렬 추가
+        return eventRepository.findAll(
+            PageRequest.of(page, size, Sort.by("id").descending())
+        ).getContent();
     }
 
     // ✅ 전체 이벤트 수 조회

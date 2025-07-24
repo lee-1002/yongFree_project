@@ -2,6 +2,7 @@ package com.gifree.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -166,4 +167,6 @@ public class ProductServiceImpl implements ProductService {
     public void remove(Long pno) {
         productRepository.updateToDelete(pno, true);
     }
+ 
+
 }

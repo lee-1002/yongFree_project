@@ -24,82 +24,86 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Transactional
 @Log4j2
-@RequiredArgsConstructor  // 생성자 자동 주입
+@RequiredArgsConstructor
 public class DonationBoardServiceImpl implements DonationBoardService {
 
-  //자동주입 대상은 final로 
   private final ModelMapper modelMapper;
-
   private final DonationBoardRepository donationBoardRepository;
 
   @Override
   public Long register(DonationBoardDTO donationBoardDTO) {
-    
-    log.info(".........");
-
-    DonationBoard donationBoard = modelMapper.map(donationBoardDTO, DonationBoard.class);
-
-    DonationBoard savedDonationBoard = donationBoardRepository.save(donationBoard);
-
-    return savedDonationBoard.getTno();
-
+      DonationBoard donationBoard = modelMapper.map(donationBoardDTO, DonationBoard.class);
+      DonationBoard savedDonationBoard = donationBoardRepository.save(donationBoard);
+      return savedDonationBoard.getTno();
   }
-    @Override
-  public DonationBoardDTO get(Long tno) {
-    
-    java.util.Optional<DonationBoard> result = donationBoardRepository.findById(tno);
 
-    DonationBoard donationBoard = result.orElseThrow();
-
-    DonationBoardDTO dto = modelMapper.map(donationBoard, DonationBoardDTO.class);
-
-    return dto;
+  @Override
+  public void addImageFiles(Long tno, List<String> fileNames) {
+      DonationBoard donationBoard = donationBoardRepository.findById(tno).orElseThrow();
+      donationBoard.clearImages();
+      if (fileNames != null && !fileNames.isEmpty()) {
+          fileNames.forEach(donationBoard::addImage);
+      }
+      donationBoardRepository.save(donationBoard);
   }
-    @Override
+
+  @Override
   public void modify(DonationBoardDTO donationBoardDTO) {
+      DonationBoard donationBoard = donationBoardRepository.findById(donationBoardDTO.getTno()).orElseThrow();
+      if (donationBoardDTO.getTitle() != null && !donationBoardDTO.getTitle().isEmpty()) {
+          donationBoard.changeTitle(donationBoardDTO.getTitle());
+      }
+      if (donationBoardDTO.getContent() != null && !donationBoardDTO.getContent().isEmpty()) {
+          donationBoard.changeContent(donationBoardDTO.getContent());
+      }
+      donationBoard.changeComplete(donationBoardDTO.isComplete());
+      donationBoardRepository.save(donationBoard);
+  }
 
-    Optional<DonationBoard> result = donationBoardRepository.findById(donationBoardDTO.getTno());
+  @Override
+  public DonationBoardDTO get(Long tno) {
+      DonationBoard donationBoard = donationBoardRepository.findById(tno).orElseThrow();
 
-    DonationBoard donationBoard = result.orElseThrow();
+      DonationBoardDTO dto = modelMapper.map(donationBoard, DonationBoardDTO.class);
 
-    donationBoard.changeTitle(donationBoardDTO.getTitle());
-    donationBoard.changeDueDate(donationBoardDTO.getDueDate());
-    donationBoard.changeComplete(donationBoardDTO.isComplete());
- 
-    donationBoardRepository.save(donationBoard);
+      // uploadFileNames 는 List<String> 이므로 바로 세팅
+      dto.setUploadFileNames(donationBoard.getUploadFileNames());
 
+      return dto;
   }
 
   @Override
   public void remove(Long tno) {
-    
-    donationBoardRepository.deleteById(tno);
-
+      donationBoardRepository.deleteById(tno);
   }
 
   @Override
   public PageResponseDTO<DonationBoardDTO> list(PageRequestDTO pageRequestDTO) {
+      Pageable pageable = PageRequest.of(
+          pageRequestDTO.getPage() - 1,
+          pageRequestDTO.getSize(),
+          Sort.by("tno").descending()
+      );
 
-    Pageable pageable = 
-      PageRequest.of( 
-        pageRequestDTO.getPage() - 1 ,  // 1페이지가 0이므로 주의 
-        pageRequestDTO.getSize(), 
-        Sort.by("tno").descending());
+      Page<DonationBoard> result = donationBoardRepository.findAllWithImages(pageable);
 
-    Page<DonationBoard> result = donationBoardRepository.findAll(pageable);    
+      List<DonationBoardDTO> dtoList = result.getContent().stream()
+          .map(donationBoard -> {
+              DonationBoardDTO dto = modelMapper.map(donationBoard, DonationBoardDTO.class);
 
-    List<DonationBoardDTO> dtoList = result.getContent().stream()
-      .map(donationBoard -> modelMapper.map(donationBoard, DonationBoardDTO.class))
-      .collect(Collectors.toList());
-    
-    long totalCount = result.getTotalElements();
+              // uploadFileNames 는 List<String> 이므로 바로 세팅
+              dto.setUploadFileNames(donationBoard.getUploadFileNames());
 
-    PageResponseDTO<DonationBoardDTO> responseDTO = PageResponseDTO.<DonationBoardDTO>withAll()
-      .dtoList(dtoList)
-      .pageRequestDTO(pageRequestDTO)
-      .totalCount(totalCount)
-      .build();
+              return dto;
+          })
+          .collect(Collectors.toList());
 
-    return responseDTO;
+      long totalCount = result.getTotalElements();
+
+      return PageResponseDTO.<DonationBoardDTO>withAll()
+          .dtoList(dtoList)
+          .pageRequestDTO(pageRequestDTO)
+          .totalCount(totalCount)
+          .build();
   }
 }

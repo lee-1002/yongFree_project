@@ -8,7 +8,8 @@ const EventAddComponent = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    image_url: "",
+    image_url: "", //미리보기 위함
+    image_file: null, //이미지 파일
     start_date: "",
     end_date: "",
     store_name: "", // 추가
@@ -17,30 +18,62 @@ const EventAddComponent = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const { name, value, type, checked, files } = e.target;
+    if (type === "file") {
+      // 파일 선택 시 파일 객체 저장
+      setForm((prev) => ({
+        ...prev,
+        image_file: files[0] || null,
+        // 이미지 URL은 파일 선택 시 미리보기용으로 비워두거나 유지 가능
+        image_url: "",
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = {
-        ...form,
-        start_date: form.start_date ? form.start_date.replace("T", " ") : null,
-        end_date: form.end_date ? form.end_date.replace("T", " ") : null,
-      };
-      await addEvent(formData);
+      const formDataObj = new FormData();
+
+      // 각 필드를 개별적으로 추가 (서버가 일반적인 multipart/form-data를 기대하는 경우)
+      formDataObj.append("title", form.title);
+      formDataObj.append("description", form.description);
+      formDataObj.append("image_url", form.image_url || "");
+      formDataObj.append(
+        "start_date",
+        form.start_date ? form.start_date.replace("T", " ") : ""
+      );
+      formDataObj.append(
+        "end_date",
+        form.end_date ? form.end_date.replace("T", " ") : ""
+      );
+      formDataObj.append("store_name", form.store_name);
+      formDataObj.append("store_address", form.store_address);
+      formDataObj.append("is_active", form.is_active);
+
+      // 이미지 파일이 있으면 추가
+      if (form.image_file) {
+        formDataObj.append("image_file", form.image_file);
+      }
+
+      console.log("🚀 FormData 내용:");
+      for (let [key, value] of formDataObj.entries()) {
+        console.log(key, value);
+      }
+
+      await addEvent(formDataObj);
       alert("이벤트가 성공적으로 등록되었습니다.");
       navigate("/event");
     } catch (error) {
       alert("등록 중 오류가 발생했습니다.");
-      console.error(error);
+      console.error("상세 에러:", error.response?.data || error.message);
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="event-add-form">
       <div className="form-group">
@@ -56,27 +89,44 @@ const EventAddComponent = () => {
         />
       </div>
       <div className="form-row">
-        {/* 왼쪽: 사진 */}
+        {/* 왼쪽: 사진 업로드 및 URL */}
         <div className="photo-box">
-          <label htmlFor="image_url">가게 사진 URL</label>
+          <label htmlFor="image_file">가게 사진 업로드</label>
+          <input
+            id="image_file"
+            name="image_file"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+          />
+          {/* 이미지 URL 입력 */}
+          <label htmlFor="image_url">또는 가게 사진 URL</label>
           <input
             id="image_url"
             name="image_url"
-            value={form.image_url}
+            value={form.image_url ?? ""}
             onChange={handleChange}
             type="url"
             placeholder="https://example.com/image.png"
           />
-          {/* 실제 이미지 미리보기도 추가 가능 */}
-          {form.image_url && (
+          {/* 미리보기 */}
+          {(form.image_file || form.image_url) && (
             <img
-              src={form.image_url}
+              src={
+                form.image_file
+                  ? URL.createObjectURL(form.image_file)
+                  : form.image_url
+              }
               alt="가게 사진"
               style={{
                 width: 150,
                 height: 150,
                 objectFit: "cover",
                 marginTop: 8,
+              }}
+              onLoad={(e) => {
+                // ✅ 파일 업로드 시 메모리 해제
+                if (form.image_file) URL.revokeObjectURL(e.target.src);
               }}
             />
           )}

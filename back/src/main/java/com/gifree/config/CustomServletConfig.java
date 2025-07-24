@@ -40,5 +40,6 @@ public class CustomServletConfig implements WebMvcConfigurer{
             .addResourceLocations("file:/" + uploadPath);
              // 실제 파일이 저장된 서버 경로
     }
+
     
 }
