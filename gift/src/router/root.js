@@ -12,7 +12,7 @@ const Loading = <div>Loading...</div>;
 
 const MainPage = lazy(() => import("../pages/MainPage"));
 const MapPage = lazy(() => import("../pages/MapPage"));
-const EventPage = lazy(() => import("../pages/event/EventPage"));
+const RandomBoxPage = lazy(() => import("../pages/RandomBoxPage"));
 const CartPage = lazy(() => import("../pages/CartPage"));
 const ChatbotPage = lazy(() => import("../pages/ChatbotPage"));
 
@@ -38,20 +38,19 @@ const root = createBrowserRouter([
           </Suspense>
         ),
       },
-
-      {
-        path: "cart",
-        element: (
-          <Suspense fallback={Loading}>
-            <CartPage />
-          </Suspense>
-        ),
-      },
       {
         path: "randombox",
         element: (
           <Suspense fallback={Loading}>
             <RandomBoxPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "cart",
+        element: (
+          <Suspense fallback={Loading}>
+            <CartPage />
           </Suspense>
         ),
       },
