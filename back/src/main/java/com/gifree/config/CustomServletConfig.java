@@ -33,12 +33,13 @@ public class CustomServletConfig implements WebMvcConfigurer{
             .allowedHeaders("Authorization", "Cache-Control", "Content-Type");
   }
 
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-      registry
-          .addResourceHandler("/api/products/view/**", "/files/**")
-          .addResourceLocations("file:" + uploadPath);
-  }
-  
+@Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+            .addResourceHandler("/api/products/view/**","/files/**")
+            .addResourceLocations("file:/" + uploadPath);
+             // 실제 파일이 저장된 서버 경로
+    }
+
     
 }

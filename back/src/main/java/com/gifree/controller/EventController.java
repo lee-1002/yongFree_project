@@ -72,7 +72,7 @@ public ResponseEntity<PageResponseDTO<Event>> getEventList(PageRequestDTO reques
             if (imageFile != null && !imageFile.isEmpty()) {
                 // 새로운 이미지 파일이 업로드된 경우
                 List<String> savedFiles = customFileUtil.saveFiles(List.of(imageFile));
-                finalImageUrl = "/files/" + savedFiles.get(0); // 파일 접근 URL 구성
+                finalImageUrl = savedFiles.get(0); // 파일 접근 URL 구성
                 log.info("새 이미지 파일 저장 완료, URL: {}", finalImageUrl);
             } else if (eventDTO.getImage_url() != null && !eventDTO.getImage_url().isEmpty()) {
                 // 이미지 파일이 없고, 기존 image_url이 DTO에 있는 경우
@@ -107,7 +107,7 @@ public ResponseEntity<PageResponseDTO<Event>> getEventList(PageRequestDTO reques
         String imageUrl = null;
         if (imageFile != null && !imageFile.isEmpty()) {
             List<String> savedFiles = customFileUtil.saveFiles(List.of(imageFile));
-            imageUrl = "/files/" + savedFiles.get(0);
+            imageUrl = savedFiles.get(0);
         } else if (eventDTO.getImage_url() != null) {
             imageUrl = eventDTO.getImage_url();
         }
