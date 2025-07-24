@@ -86,7 +86,7 @@ const GraphComponent = () => {
           <div className="ad-image-wrapper">
             <Link to={`/event/${events[currentIndex].id}`}>
               <img
-                src={`${BASE_BACKEND_URL}${events[currentIndex].imageUrl}`}
+                src={`${BASE_BACKEND_URL}/files/${events[currentIndex].imageUrl}`}
                 alt={events[currentIndex].title}
                 onError={(e) => {
                   e.target.onerror = null;
