@@ -48,6 +48,14 @@ const root = createBrowserRouter([
         ),
       },
       {
+        path: "randombox",
+        element: (
+          <Suspense fallback={Loading}>
+            <RandomBoxPage />
+          </Suspense>
+        ),
+      },
+      {
         path: "event",
         children: eventRouter(),
       },

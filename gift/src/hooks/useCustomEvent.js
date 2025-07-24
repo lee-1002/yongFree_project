@@ -5,7 +5,6 @@ import {
   addEvent as apiAddEvent,
   patchToggleEventStatus,
   deleteEventById,
-  uploadEventImage, // 추가 import
 } from "../api/eventApi";
 
 const useCustomEvent = () => {
@@ -28,18 +27,6 @@ const useCustomEvent = () => {
     };
     fetchEvent();
   }, []);
-
-  // 이미지 업로드 함수
-  const uploadImage = async (file) => {
-    setError(null);
-    try {
-      const data = await uploadEventImage(file);
-      return data.image_url;
-    } catch (e) {
-      setError(e.message);
-      return null;
-    }
-  };
 
   // 이벤트 추가
   const addEvent = async (newEventData) => {
@@ -92,7 +79,6 @@ const useCustomEvent = () => {
     events,
     loading,
     error,
-    uploadImage, //추가
     addEvent,
     toggleEvent,
     deleteEvent,

@@ -4,7 +4,7 @@ import { formatShortDate } from "../../util/dateUtil";
 import { getEvents } from "../../api/eventApi";
 import "./EventList.css";
 
-const BASE_BACKEND_URL = "http://localhost:8080";
+const IMAGE_BASE_URL = "http://localhost:8080/files";
 
 const EventListComponent = () => {
   const [events, setEvents] = useState([]);
@@ -72,7 +72,7 @@ const EventListComponent = () => {
               <div className="thumb">
                 <Link to={`/event/${event.id}`}>
                   <img
-                    src={`${BASE_BACKEND_URL}${event.imageUrl}`}
+                    src={`${IMAGE_BASE_URL}/${event.imageUrl}`}
                     width="360"
                     height="134"
                     alt={event.title}

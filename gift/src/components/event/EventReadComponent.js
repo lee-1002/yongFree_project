@@ -8,6 +8,7 @@ import {
 import { formatShortDate } from "../../util/dateUtil";
 import "./EventRead.css";
 
+const IMAGE_BASE_URL = "http://localhost:8080/files";
 const EventReadComponent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -227,7 +228,11 @@ const EventReadComponent = () => {
                 ) : (
                   <div className="current-image">
                     <img
-                      src={event.imageUrl || "/placeholder.png"}
+                      src={
+                        event.imageUrl
+                          ? `${IMAGE_BASE_URL}/${event.imageUrl}`
+                          : "/placeholder.png"
+                      }
                       alt={event.title}
                       className="event-photo"
                     />
@@ -237,7 +242,11 @@ const EventReadComponent = () => {
               </div>
             ) : (
               <img
-                src={event.imageUrl || "/placeholder.png"}
+                src={
+                  event.imageUrl
+                    ? `${IMAGE_BASE_URL}/${event.imageUrl}`
+                    : "/placeholder.png"
+                }
                 alt={event.title}
                 className="event-photo"
               />
