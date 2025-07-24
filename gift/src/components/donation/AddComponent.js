@@ -140,16 +140,16 @@ const AddComponent = () => {
   );
 
   const closeSuccessModal = () => {
-    setResult({ isSuccess: false, message: null }); // 상태 초기화
+    setResult({ isSuccess: false, message: null });
     moveToList("/donationBoard", {}, false);
   };
 
   const closeErrorModal = () => {
-    setResult({ isSuccess: false, message: null }); // 상태만 초기화
+    setResult({ isSuccess: false, message: null });
   };
 
   return (
-    <div className="border-2 border-sky-200 mt-10 p-4 mx-auto max-w-4xl px-12">
+    <div className="border-2 border-sky-200 mt-10 p-4 w-full">
       {result.message && (
         <ResultModal
           title={"처리결과"}
@@ -191,7 +191,8 @@ const AddComponent = () => {
           <Quill
             ref={quillRef}
             className="w-full border border-solid border-neutral-300 rounded-md shadow-sm"
-            style={{ height: "700px" }}
+            // style 속성에서 고정 높이를 제거하고, minHeight를 지정하여 최소 높이만 설정합니다.
+            style={{ height: "auto", minHeight: "300px" }}
             theme="snow"
             value={donationBoard.content}
             onChange={handleQuillChange}

@@ -3,6 +3,7 @@ import { getOne } from "../../api/donationBoardApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import { Link } from "react-router-dom";
 import "quill/dist/quill.snow.css";
+import "./ReadComponent.css";
 
 const initState = {
   tno: 0,
@@ -16,81 +17,35 @@ const basePath = "/donationBoard";
 
 const ReadComponent = ({ tno }) => {
   const [donationBoard, setDonationBoard] = useState(initState);
-  // const [fetching, setFetching] = useState(false);
   const { moveToModify } = useCustomMove();
 
   useEffect(() => {
     getOne(tno).then((data) => {
       console.log(data);
       setDonationBoard(data);
-      // setFetching(false);
     });
   }, [tno]);
 
-  const makeDiv = (title, value) => (
-    <div className="flex justify-center">
-      <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-        <div className="w-1/5 p-6 text-right font-bold">{title}</div>
-        {title === "Content" ? (
-          <div
-            className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-white ql-editor" // ⭐ 여기에 ql-editor 클래스 추가
-            style={{ minHeight: "300px" }}
-            dangerouslySetInnerHTML={{ __html: value }}
-          ></div>
-        ) : (
-          <div className="w-4/5 p-6 rounded-r border border-solid shadow-md bg-gray-100">
-            {value}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <>
-      <div>
-        <span>게시글</span>
-      </div>
-      <div className="border-2 border-sky-200 mt-10 m-2 p-4 ">
-        {makeDiv("Tno", donationBoard.tno)}
-        {makeDiv("Writer", donationBoard.writer)}
-        {makeDiv("Title", donationBoard.title)}
-        {makeDiv("Due Date", donationBoard.dueDate)}
-        {makeDiv("Content", donationBoard.content)}
-        {makeDiv("Complete", donationBoard.complete ? "Completed" : "Not Yet")}
+      <div className="flex flex-col items-center p-4 w-full">
+        {/* 제목 섹션 */}
+        <h1 className="text-3xl font-bold mb-4">{donationBoard.title}</h1>
+        <hr className="w-full my-4 border-gray-300" />
 
-        {/* Quill 에디터 스타일을 강제로 적용하기 위해 !important로 우선순위 */}
-        <style>
-          {`
-            .ql-editor {
-              min-height: 300px;
-              line-height: 1.42;
-              font-size: 16px;
-              color: #000;
-              padding: 12px 15px !important;
-            }
+        {/* 내용 섹션 */}
+        <div className="w-full px-4 ql-editor">
+          <div dangerouslySetInnerHTML={{ __html: donationBoard.content }} />
+        </div>
 
-            .ql-editor h1 {
-              font-size: 2em !important;
-              margin: 0.67em 0 !important;
-              font-weight: bold !important;
-            }
+        {/* 작성자 섹션 */}
+        <hr className="w-full my-4 border-gray-300" />
+        <div className="text-center text-sm text-gray-600 mb-4">
+          작성자: {donationBoard.writer}
+        </div>
 
-            .ql-editor p {
-              margin: 0 0 1em 0 !important;
-            }
-            
-            .ql-editor img {
-              max-width: 100% !important;
-              height: auto !important;
-              display: block !important;
-              margin: 10px auto !important;
-              border: 1px solid #ddd !important;
-              object-fit: contain !important;
-            }
-          `}
-        </style>
-        <div className="flex justify-end p-4">
+        {/* 버튼 섹션 */}
+        <div className="flex justify-center p-4 w-full">
           <button
             type="button"
             className="rounded p-4 m-2 text-xl w-34 text-white bg-red-500 text-center"
@@ -98,14 +53,12 @@ const ReadComponent = ({ tno }) => {
           >
             게시글 수정
           </button>
-          <div className="flex justify-end p-4">
-            <Link
-              to="/donationBoard"
-              className="rounded p-4 m-2 text-xl w-34 text-white bg-blue-500 text-center"
-            >
-              게시글 목록
-            </Link>
-          </div>
+          <Link
+            to="/donationBoard"
+            className="rounded p-4 m-2 text-xl w-34 text-white bg-blue-500 text-center"
+          >
+            게시글 목록
+          </Link>
         </div>
       </div>
     </>
