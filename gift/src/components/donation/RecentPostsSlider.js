@@ -72,7 +72,7 @@ function HorizontalCarousel({
 
     const interval = setInterval(() => {
       next();
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [autoPlay, isHovered, items.length, visibleCount]);
@@ -152,7 +152,7 @@ const RecentPostsSlider = () => {
       <h2 className="recent-posts-title">최신 기부 스토리</h2>
       <HorizontalCarousel
         items={recentPosts}
-        visibleCount={2}
+        visibleCount={3.5}
         autoPlay={true}
       />
     </div>
