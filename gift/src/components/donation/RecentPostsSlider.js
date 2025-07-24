@@ -1,80 +1,124 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getRecentList } from "../../api/donationBoardApi";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
 import "./RecentPostsSlider.css";
 
 function HorizontalCarousel({
   items,
   visibleCount = 4,
-  autoPlay = false,
+  autoPlay = true,
   showControls = true,
 }) {
-  const count = items.length;
-  const slides = [...items]; // 무한 슬라이딩 로직은 제거하고, 아이템만 사용
-  const [idx, setIdx] = useState(0);
+  const originalSlides = items;
+  const extendedSlides = [...originalSlides, ...originalSlides]; // 반복용
+  const [idx, setIdx] = useState(originalSlides.length); // 중간부터 시작
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const trackRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const idxRef = useRef(idx);
 
   useEffect(() => {
-    if (!trackRef.current) return;
+    idxRef.current = idx;
+  }, [idx]);
+
+  const next = () => {
+    setIdx((i) => i + 1);
+    setIsTransitioning(true);
+  };
+
+  const prev = () => {
+    setIdx((i) => i - 1);
+    setIsTransitioning(true);
+  };
+
+  useEffect(() => {
     const track = trackRef.current;
+    if (!track) return;
 
-    if (items.length === 0) return;
-
-    // 아이템 너비 계산
     const itemWidth = track.children[0]?.offsetWidth || 0;
-    const itemMarginRight = 16; // CSS의 `mr-4`에 해당하는 값
+    const itemMarginRight = 16; // mr-4
     const w = itemWidth + itemMarginRight;
 
-    track.style.transition = "transform 0.5s ease";
+    track.style.transition = isTransitioning ? "transform 0.5s ease" : "none";
     track.style.transform = `translateX(-${idx * w}px)`;
-  }, [idx, items]);
+  }, [idx, isTransitioning]);
 
-  const prev = () => setIdx((i) => Math.max(0, i - 1));
-  const next = () => setIdx((i) => Math.min(count - visibleCount, i + 1));
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
 
-  // 데이터가 없으면 null 반환
-  if (count === 0) return null;
+    const handleTransitionEnd = () => {
+      const currentIdx = idxRef.current;
+      if (currentIdx >= extendedSlides.length - visibleCount) {
+        setIsTransitioning(false);
+        setIdx(originalSlides.length); // 점프
+      } else if (currentIdx <= 0) {
+        setIsTransitioning(false);
+        setIdx(extendedSlides.length - 2 * visibleCount);
+      } else {
+        setIsTransitioning(false);
+      }
+    };
+
+    track.addEventListener("transitionend", handleTransitionEnd);
+    return () => {
+      track.removeEventListener("transitionend", handleTransitionEnd);
+    };
+  }, [extendedSlides.length, originalSlides.length, visibleCount]);
+
+  useEffect(() => {
+    if (!autoPlay || isHovered || items.length <= visibleCount) return;
+
+    const interval = setInterval(() => {
+      next();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, isHovered, items.length, visibleCount]);
+
+  if (items.length === 0) return null;
 
   return (
-    <div className="horizontal-carousel-container">
+    <div
+      className="horizontal-carousel-container"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {showControls && (
         <button className="carousel-button carousel-button-prev" onClick={prev}>
           &lt;
         </button>
       )}
       <div className="carousel-viewport">
-        <div className="carousel-track" ref={trackRef}>
-          {slides.map((it, i) => {
-            return (
-              <div
-                className="carousel-card"
-                key={`${it.tno}-${i}`}
-                style={{ width: `calc(100% / ${visibleCount})` }}
-              >
-                <Link to={`/donationBoard/read/${it.tno}`}>
-                  <div className="card-link-wrapper">
-                    <div className="card-image-wrapper">
-                      {it.uploadFileNames && it.uploadFileNames.length > 0 ? (
-                        <img
-                          src={`${API_SERVER_HOST}/files/s_${it.uploadFileNames[0]}`}
-                          alt={it.title}
-                          className="card-image"
-                        />
-                      ) : (
-                        <div className="card-no-image">이미지 없음</div>
-                      )}
-                    </div>
-                    <div className="card-content">
-                      <h3 className="card-title">{it.title}</h3>
-                      <p className="card-writer">{it.writer}</p>
-                    </div>
+        <div className="carousel-track flex" ref={trackRef}>
+          {extendedSlides.map((it, i) => (
+            <div
+              className="carousel-card mr-4"
+              key={`${it.tno}-${i}`}
+              style={{ width: `calc(100% / ${visibleCount})` }}
+            >
+              <Link to={`/donationBoard/read/${it.tno}`}>
+                <div className="card-link-wrapper">
+                  <div className="card-image-wrapper">
+                    {it.uploadFileNames && it.uploadFileNames.length > 0 ? (
+                      <img
+                        src={`${API_SERVER_HOST}/files/s_${it.uploadFileNames[0]}`}
+                        alt={it.title}
+                        className="card-image"
+                      />
+                    ) : (
+                      <div className="card-no-image">이미지 없음</div>
+                    )}
                   </div>
-                </Link>
-              </div>
-            );
-          })}
+                  <div className="card-content">
+                    <h3 className="card-title">{it.title}</h3>
+                    <p className="card-writer">{it.writer}</p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
       {showControls && (
@@ -101,14 +145,16 @@ const RecentPostsSlider = () => {
     });
   }, []);
 
-  if (recentPosts.length === 0) {
-    return null;
-  }
+  if (recentPosts.length === 0) return null;
 
   return (
     <div className="recent-posts-slider-container">
       <h2 className="recent-posts-title">최신 기부 스토리</h2>
-      <HorizontalCarousel items={recentPosts} visibleCount={2} />
+      <HorizontalCarousel
+        items={recentPosts}
+        visibleCount={2}
+        autoPlay={true}
+      />
     </div>
   );
 };

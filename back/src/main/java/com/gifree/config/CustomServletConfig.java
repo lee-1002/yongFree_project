@@ -36,7 +36,7 @@ public class CustomServletConfig implements WebMvcConfigurer{
 @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-            .addResourceHandler("/api/products/view/**")
+            .addResourceHandler("/api/products/view/**","/files/**")
             .addResourceLocations("file:" + uploadPath);
             registry
             .addResourceHandler("/files/**") // 프론트엔드에서 /files/파일명 으로 접근할 때

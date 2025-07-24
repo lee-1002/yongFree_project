@@ -23,7 +23,7 @@ const IMAGE_BASE_URL = `${API_SERVER_HOST}/files`;
 
 const getPlainText = (htmlString) => {
   if (!htmlString) return "";
-  // 정규식을 사용해 모든 HTML 태그를 제거합니다.
+  // 정규식을 사용해 모든 HTML 태그를 제거
   const plainText = htmlString.replace(/<[^>]*>?/gm, "").trim();
   // 추출된 텍스트가 비어있으면 null을 반환
   return plainText || null;
@@ -71,7 +71,7 @@ const ListComponent = () => {
       })
       .catch((error) => {
         console.error("최신 게시글 목록을 가져오는 중 오류 발생:", error);
-        // ⭐ 이 에러가 401 Unauthorized 에러입니다.
+        // 이 에러가 401 Unauthorized 에러입니다.
         setRecentPosts([]);
       });
   }, [page, size, refresh]);

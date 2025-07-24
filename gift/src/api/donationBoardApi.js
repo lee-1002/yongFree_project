@@ -41,11 +41,12 @@ export const addImageFilesForBoard = async (tno, fileNames) => {
   const res = await axios.post(`/api/donationBoard/${tno}/files`, fileNames);
   return res.data;
 };
-
 export const getRecentList = async () => {
   try {
-    const res = await axios.get(`${prefix}/recent`);
-    return res.data;
+    const res = await axios.get(`${prefix}/list`, {
+      params: { page: 1, size: 10 }, // 첫 페이지 10개만 요청
+    });
+    return res.data.dtoList || [];
   } catch (error) {
     console.error("최신 게시글 목록을 가져오는 중 오류 발생:", error);
     return [];
