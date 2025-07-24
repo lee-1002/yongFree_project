@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./GraphComponent.css";
+import { getEvents } from "../api/eventApi";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+const BASE_BACKEND_URL = "http://localhost:8080";
 
 const GraphComponent = () => {
   const [input, setInput] = useState("");
@@ -8,6 +12,8 @@ const GraphComponent = () => {
   const [listData, setListData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [events, setEvents] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   //   const [showResults, setShowResults] = useState(false);
   //   const [showAnalysisResults, setShowAnalysisResults] = useState(false); // 분석 결과 표시 여부
 
@@ -50,13 +56,64 @@ const GraphComponent = () => {
     handleSearch("기부 횟수");
   }, []);
 
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await getEvents(1);
+        if (data?.dtoList) {
+          setEvents(data.dtoList);
+        }
+      } catch (err) {
+        console.error("이벤트 목록 가져오기 실패:", err);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+  const handleNextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % events.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
+  };
+
   return (
     <div className="ad-graph-list-container">
       {/* 광고 및 이벤트 이미지 */}
       <div className="ad-container">
-        <Link to="/event">
-          <img src="/event_test_img(1).png" alt="이벤트 테스트 이미지" />
-        </Link>
+        {events.length > 0 ? (
+          <div className="ad-image-wrapper">
+            <Link to={`/event/${events[currentIndex].id}`}>
+              <img
+                src={`${BASE_BACKEND_URL}${events[currentIndex].imageUrl}`}
+                alt={events[currentIndex].title}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://img.sa.nexon.com/S2/Game/sudden/2011/temp/thumb_event_noImage.jpg";
+                }}
+              />
+            </Link>
+            <button className="arrow-button left" onClick={handlePrevImage}>
+              <FaChevronLeft />
+            </button>
+            <button className="arrow-button right" onClick={handleNextImage}>
+              <FaChevronRight />
+            </button>
+            {/* 도트 인디케이터 여기! */}
+            <div className="dots-wrapper">
+              {events.map((_, index) => (
+                <div
+                  key={index}
+                  className={`dot ${currentIndex === index ? "active" : ""}`}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p>이벤트 이미지를 불러오는 중...</p>
+        )}
       </div>
       <div className="graph-list-container">
         {/* 그래프 */}

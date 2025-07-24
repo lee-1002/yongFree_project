@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatShortDate } from "../../util/dateUtil";
-import {
-  getEvents,
-  patchToggleEventStatus,
-  deleteEventById as deleteEventApi,
-} from "../../api/eventApi";
+import { getEvents } from "../../api/eventApi";
 import "./EventList.css";
+
+const BASE_BACKEND_URL = "http://localhost:8080";
 
 const EventListComponent = () => {
   const [events, setEvents] = useState([]);
@@ -54,27 +52,6 @@ const EventListComponent = () => {
     }
   };
 
-  const handleToggle = async (id) => {
-    try {
-      const updatedEvent = await patchToggleEventStatus(id);
-      setEvents((prev) =>
-        prev.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
-      );
-    } catch {
-      alert("이벤트 상태 변경에 실패했습니다.");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
-    try {
-      await deleteEventApi(id);
-      setEvents((prev) => prev.filter((e) => e.id !== id));
-    } catch {
-      alert("이벤트 삭제에 실패했습니다.");
-    }
-  };
-
   const handleAdd = () => {
     navigate("/event/add");
   };
@@ -95,8 +72,15 @@ const EventListComponent = () => {
               <div className="thumb">
                 <Link to={`/event/${event.id}`}>
                   <img
-                    src={event.imageUrl || "/placeholder.png"}
+                    src={`${BASE_BACKEND_URL}${event.imageUrl}`}
+                    width="360"
+                    height="134"
                     alt={event.title}
+                    onError={(e) => {
+                      e.target.onerror = null; // 무한 루프 방지
+                      e.target.src =
+                        "https://img.sa.nexon.com/S2/Game/sudden/2011/temp/thumb_event_noImage.jpg";
+                    }}
                   />
                 </Link>
               </div>
@@ -115,11 +99,6 @@ const EventListComponent = () => {
                   <br />
                   <strong>주소:</strong> {event.storeAddress || "정보 없음"}
                 </div>
-
-                <button onClick={() => handleToggle(event.id)}>
-                  {event.isActive ? "비활성화" : "활성화"}
-                </button>
-                <button onClick={() => handleDelete(event.id)}>삭제</button>
               </div>
               <Link to={`/event/${event.id}`} className="btn_detail">
                 <b>자세히 보기</b>

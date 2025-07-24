@@ -1,15 +1,19 @@
 .boardEventList {
-  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
   padding: 0;
   margin: 0;
+  list-style: none;
 }
 
 .boardEventList li {
+  width: calc(50% - 10px); /* 2열 = 전체의 절반 - gap 고려 */
   display: flex;
-  align-items: flex-start;
-  padding: 20px 0;
-  border-top: 1px solid #e7e7e7;
-  position: relative;
+  flex-direction: column;
+  border: 1px solid #e7e7e7;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .boardEventList li:first-child {
@@ -17,13 +21,15 @@
 }
 
 .thumb img {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 740 / 357;
   object-fit: cover;
+  border-radius: 6px;
 }
 
 .data {
-  margin-left: 16px;
+  margin-top: 16px;
   flex: 1;
 }
 

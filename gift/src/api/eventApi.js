@@ -16,15 +16,43 @@ export const getEventById = async (id) => {
 };
 
 // 이벤트 등록
-export const addEvent = async (eventData) => {
-  const res = await axios.post(host, eventData);
-  return res.data;
+export const addEvent = async (formData) => {
+  try {
+    const res = await axios.post(host, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("✅ 서버 응답:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error(
+      "❌ 이벤트 등록 실패:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 };
 
 // 이벤트 수정
-export const modifyEvent = async (id, eventData) => {
-  const res = await axios.put(`${host}/${id}`, eventData);
-  return res.data;
+export const modifyEvent = async (id, formData) => {
+  try {
+    const res = await axios.put(`${host}/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("✅ 이벤트 수정 서버 응답:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error(
+      "❌ 이벤트 수정 실패:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 };
 
 // 이벤트 삭제
@@ -36,5 +64,24 @@ export const deleteEventById = async (id) => {
 // 이벤트 활성화/비활성화 토글
 export const patchToggleEventStatus = async (id) => {
   const res = await axios.patch(`${host}/${id}/toggle`);
+  return res.data;
+};
+
+// 이미지 파일 업로드 API
+export const uploadEventImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image_file", file);
+
+  const res = await axios.post(`${host}/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data; // { image_url: "https://..." }
+};
+export const editEventById = async (id, formData) => {
+  const res = await axios.put(`${host}/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data;
 };
