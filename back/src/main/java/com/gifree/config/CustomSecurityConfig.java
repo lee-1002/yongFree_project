@@ -56,7 +56,7 @@ public class CustomSecurityConfig {
       "/api/events/**",
       "/api/donationBoard/**",
       "/files/**"
-      
+
   ).permitAll() 
     .anyRequest().authenticated()
 );
