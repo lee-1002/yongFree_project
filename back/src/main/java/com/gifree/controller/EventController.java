@@ -145,7 +145,7 @@ public ResponseEntity<PageResponseDTO<Event>> getEventList(PageRequestDTO reques
                 .endDate(parseDateTime(eventDTO.getEnd_date()))
                 .storeName(eventDTO.getStore_name())           // 추가
                 .storeAddress(eventDTO.getStore_address()) 
-                .isActive(eventDTO.is_active())
+                .isActive(eventDTO.getIsActive())
                 .build();
     }
 

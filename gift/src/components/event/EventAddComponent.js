@@ -14,7 +14,7 @@ const EventAddComponent = () => {
     end_date: "",
     store_name: "", // 추가
     store_address: "",
-    is_active: true,
+    isActive: true,
   });
 
   const handleChange = (e) => {
@@ -54,7 +54,7 @@ const EventAddComponent = () => {
       );
       formDataObj.append("store_name", form.store_name);
       formDataObj.append("store_address", form.store_address);
-      formDataObj.append("is_active", form.is_active);
+      formDataObj.append("isActive", form.isActive ? "true" : "false");
 
       // 이미지 파일이 있으면 추가
       if (form.image_file) {
@@ -204,7 +204,7 @@ const EventAddComponent = () => {
           id="is_active"
           name="is_active"
           type="checkbox"
-          checked={form.is_active}
+          checked={form.isActive}
           onChange={handleChange}
         />
       </div>

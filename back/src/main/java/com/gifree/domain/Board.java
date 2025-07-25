@@ -50,6 +50,20 @@ public class Board {
     public void preUpdate() {
         this.modDate = LocalDateTime.now();
     }
+    //  /** 이미지 추가 (BoardServiceImpl에서 saveFiles한 파일명을 전달) */
+    //  public void addImage(String fileName) {
+    //     this.images.add(
+    //       BoardImage.builder()
+    //                 .fileName(fileName)
+    //                 .build()
+    //     );
+    // }
+
+    // /** 이미지 리스트 초기화 */
+    // public void clearImages() {
+    //     this.images.clear();
+    // }
+}
 
    
-}
+

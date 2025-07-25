@@ -47,7 +47,12 @@ const ListComponent = () => {
     setFetching(true);
     getList({ page, size })
       .then((data) => {
-        const list = data.dtoList || [];
+        console.log("🔥 getList 응답 전체 데이터:", data);
+
+        // 여기서 리스트를 추출
+        const list = data?.dtoList || [];
+
+        console.log("📦 추출된 리스트:", list);
         if (list.length < size) {
           setHasMore(false);
         }

@@ -19,6 +19,29 @@
 .boardEventList li:first-child {
   border-top: none;
 }
+.thumb {
+  position: relative;
+  display: inline-block; /* 크기 맞추기 */
+}
+
+.thumb.inactive::after {
+  content: "비활성화된 이벤트";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6); /* 반투명 오버레이 */
+  color: red;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+  text-shadow: 0 0 5px white;
+}
 
 .thumb img {
   width: 100%;

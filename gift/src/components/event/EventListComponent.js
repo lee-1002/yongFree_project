@@ -29,22 +29,39 @@ const EventListComponent = () => {
       const data = await getEvents(page);
       console.log("서버에서 받은 이벤트 데이터:", data);
 
-      if (data?.dtoList) {
-        setEvents(data.dtoList);
+      // 수정: 더 엄격한 데이터 검증
+      if (data && Array.isArray(data.dtoList)) {
+        // active를 isActive로 변환하여 저장하고 정렬
+        const eventsWithIsActive = data.dtoList.map((event) => ({
+          ...event,
+          isActive: event.active, // active 필드를 isActive로 변환
+        }));
+
+        // 활성화된 이벤트를 먼저, 비활성화된 이벤트를 나중에 정렬
+        const sortedEvents = eventsWithIsActive.sort((a, b) => {
+          // isActive가 true인 것을 먼저 (내림차순)
+          if (a.isActive === b.isActive) {
+            return 0; // 같으면 원래 순서 유지
+          }
+          return b.isActive - a.isActive; // true(1)가 false(0)보다 먼저
+        });
+
+        setEvents(sortedEvents);
         setPageInfo({
-          pageNumList: data.pageNumList,
-          prev: data.prev,
-          next: data.next,
-          prevPage: data.prevPage,
-          nextPage: data.nextPage,
-          current: data.current,
-          totalPage: data.totalPage,
+          pageNumList: data.pageNumList || [],
+          prev: Boolean(data.prev),
+          next: Boolean(data.next),
+          prevPage: data.prevPage || 1,
+          nextPage: data.nextPage || 1,
+          current: data.current || 1,
+          totalPage: data.totalPage || 1,
         });
       } else {
         setError("이벤트 데이터가 올바르지 않습니다.");
         setEvents([]);
       }
     } catch (err) {
+      console.error("이벤트 로딩 오류:", err);
       setError("이벤트를 불러오는 데 실패했습니다.");
       setEvents([]);
     } finally {
@@ -54,6 +71,15 @@ const EventListComponent = () => {
 
   const handleAdd = () => {
     navigate("/event/add");
+  };
+
+  // 수정: 이미지 오류 처리 함수 분리
+  const handleImageError = (e) => {
+    if (e.target.src.includes("thumb_event_noImage.jpg")) {
+      return; // 이미 기본 이미지로 설정되어 있으면 더 이상 변경하지 않음
+    }
+    e.target.src =
+      "https://img.sa.nexon.com/S2/Game/sudden/2011/temp/thumb_event_noImage.jpg";
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -69,30 +95,34 @@ const EventListComponent = () => {
         ) : (
           events.map((event) => (
             <li key={event.id}>
-              <div className="thumb">
+              {/* 수정: isActive 상태를 boolean으로 확인 */}
+              <div className={`thumb ${!event.isActive ? "inactive" : ""}`}>
                 <Link to={`/event/${event.id}`}>
                   <img
                     src={`${IMAGE_BASE_URL}/${event.imageUrl}`}
                     width="360"
                     height="134"
-                    alt={event.title}
-                    onError={(e) => {
-                      e.target.onerror = null; // 무한 루프 방지
-                      e.target.src =
-                        "https://img.sa.nexon.com/S2/Game/sudden/2011/temp/thumb_event_noImage.jpg";
-                    }}
+                    alt={event.title || "이벤트 이미지"}
+                    onError={handleImageError}
                   />
                 </Link>
               </div>
               <div className="data">
                 <Link to={`/event/${event.id}`} className="title-link">
-                  {event.title}
+                  {event.title || "제목 없음"}
                 </Link>
                 <div className="event-date">
-                  {formatShortDate(event.startDate)} ~{" "}
-                  {formatShortDate(event.endDate)}
+                  {event.startDate
+                    ? formatShortDate(event.startDate)
+                    : "시작일 미정"}{" "}
+                  ~{" "}
+                  {event.endDate
+                    ? formatShortDate(event.endDate)
+                    : "종료일 미정"}
                 </div>
-                <div className="txt ellipsis">{event.description}</div>
+                <div className="txt ellipsis">
+                  {event.description || "설명 없음"}
+                </div>
 
                 <div className="store-info">
                   <strong>가게명:</strong> {event.storeName || "정보 없음"}
@@ -108,30 +138,30 @@ const EventListComponent = () => {
         )}
       </ul>
 
-      {/* ✅ 추가된 페이징 UI */}
-      <div className="pagination">
-        {" "}
-        {/* 🔥 추가됨 */}
-        {pageInfo.prev && (
-          <button onClick={() => handlePageClick(pageInfo.prevPage)}>
-            &laquo;
-          </button> // 🔥 추가됨
-        )}
-        {pageInfo.pageNumList?.map((num) => (
-          <button
-            key={num}
-            onClick={() => handlePageClick(num)} // 🔥 추가됨
-            className={num === pageInfo.current ? "active" : ""} // 🔥 추가됨
-          >
-            {num}
-          </button>
-        ))}
-        {pageInfo.next && (
-          <button onClick={() => handlePageClick(pageInfo.nextPage)}>
-            &raquo;
-          </button> // 🔥 추가됨
-        )}
-      </div>
+      {/* 수정: 페이징 UI 조건 개선 */}
+      {pageInfo.pageNumList && pageInfo.pageNumList.length > 0 && (
+        <div className="pagination">
+          {pageInfo.prev && (
+            <button onClick={() => handlePageClick(pageInfo.prevPage)}>
+              &laquo;
+            </button>
+          )}
+          {pageInfo.pageNumList.map((num) => (
+            <button
+              key={num}
+              onClick={() => handlePageClick(num)}
+              className={num === pageInfo.current ? "active" : ""}
+            >
+              {num}
+            </button>
+          ))}
+          {pageInfo.next && (
+            <button onClick={() => handlePageClick(pageInfo.nextPage)}>
+              &raquo;
+            </button>
+          )}
+        </div>
+      )}
 
       <button onClick={handleAdd}>이벤트 추가</button>
     </div>

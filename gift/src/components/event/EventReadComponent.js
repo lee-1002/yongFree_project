@@ -27,9 +27,14 @@ const EventReadComponent = () => {
     const fetchEvent = async () => {
       try {
         const data = await getEventById(id);
-        setEvent(data);
+        console.log("서버에서 받은 이벤트 데이터:", data);
+        setEvent({
+          ...data,
+          isActive: data.active, // active를 isActive로 변환
+        });
         setEditForm({
           ...data,
+          isActive: data.active, // editForm에도 동일하게
           startDate: data.startDate
             ? data.startDate.split(" ")[0] || data.startDate.split("T")[0]
             : "",
@@ -112,9 +117,10 @@ const EventReadComponent = () => {
       end_date: editForm.endDate ? editForm.endDate + " 23:59" : "",
       store_name: editForm.storeName,
       store_address: editForm.storeAddress,
-      is_active: editForm.isActive,
+      isActive: editForm.isActive,
       image_url: editForm.imageUrl, // 기존 이미지 유지
     };
+    console.log("서버로 보낼 데이터:", eventPayload);
 
     formData.append(
       "event",
@@ -131,6 +137,7 @@ const EventReadComponent = () => {
     try {
       await editEventById(id, formData);
       alert("수정 완료!");
+      window.location.reload();
       setIsEditing(false);
       const updated = await getEventById(id);
       setEvent(updated);
@@ -299,9 +306,6 @@ const EventReadComponent = () => {
                     value={editForm.endDate}
                     onChange={handleChange}
                   />
-                  {validationErrors.dates && (
-                    <div className="error-text">{validationErrors.dates}</div>
-                  )}
                 </div>
               ) : (
                 <div>
@@ -310,6 +314,15 @@ const EventReadComponent = () => {
                 </div>
               )}
             </div>
+            {/* 에러 메시지 (기간과 상태 사이) */}
+            {validationErrors.dates && (
+              <div
+                className="error-text"
+                style={{ color: "red", margin: "4px 0" }}
+              >
+                {validationErrors.dates}
+              </div>
+            )}
 
             {/* 활성화 상태 토글 */}
             <div className="info-item">

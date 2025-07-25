@@ -25,7 +25,7 @@ public class EventDTO {
     private String end_date;
 
     
-    private boolean is_active;
+    private Boolean isActive;
    
     private String store_name; 
       

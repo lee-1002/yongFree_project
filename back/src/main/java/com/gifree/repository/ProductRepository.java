@@ -22,8 +22,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
   @Query("update Product p set p.delFlag = :flag where p.pno = :pno")
   void updateToDelete(@Param("pno") Long pno, @Param("flag") boolean flag);
 
-  @Query("select p, pi from Product p left join p.imageList pi " +
-  "where pi.ord = 0 and p.delFlag = false " +
+  @Query("select p, pi from Product p left join p.imageList pi on pi.ord = 0 " +
+  "where p.delFlag = false " +
   "and (:keyword is null or :keyword = '' " +
   "or p.pname like %:keyword% " +
   "or p.pdesc like %:keyword% " +
