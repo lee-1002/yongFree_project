@@ -84,6 +84,9 @@ const ListComponent = () => {
 
   return (
     <>
+      <button className="donation-write-button" onClick={handleClickAdd}>
+        글쓰기 (관리자 전용)
+      </button>
       <div className="donationBoard-main-iamge-box">
         <img src={"donationBoardMain.jpg"} alt="기부 페이지 메인 이미지" />
         <div className="index-container">
@@ -95,9 +98,6 @@ const ListComponent = () => {
           </div>
         </div>
       </div>
-      <button className="donation-write-button" onClick={handleClickAdd}>
-        글쓰기 (관리자 전용)
-      </button>
 
       <RecentPostsSlider />
       <div className="donation-board-container">
