@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getRecentList } from "../../api/donationBoardApi";
-import { API_SERVER_HOST } from "../../api/todoApi";
+import { API_SERVER_HOST } from "../../api/backendApi";
 import { Link } from "react-router-dom";
 import "./RecentPostsSlider.css";
 

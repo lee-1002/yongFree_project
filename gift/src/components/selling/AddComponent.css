@@ -1,0 +1,101 @@
+/* AddComponent.css */
+
+/* 전체 wrapper */
+.add-component {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 진행중/결과 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* 각 입력 그룹 */
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* 레이블 */
+.form-label {
+  width: 20%;
+  padding-right: 1rem;
+  text-align: right;
+  font-weight: bold;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* 입력 래퍼 */
+.form-input {
+  width: 80%;
+  box-sizing: border-box;
+}
+
+/* 텍스트, 숫자, 파일, textarea 공통 스타일 */
+.form-input input[type="text"],
+.form-input input[type="number"],
+.form-input input[type="file"],
+.form-input textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* textarea 높이 지정 */
+.form-input textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+/* 읽기 전용 Sale Price */
+.readonly-input {
+  background: #f3f4f6;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+/* 버튼 그룹 */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* ADD 버튼 */
+.button-group button {
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.button-group button:hover {
+  background-color: #2f6ebc;
+}

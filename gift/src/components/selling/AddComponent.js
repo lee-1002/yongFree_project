@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
 import useCustomMove from "../../hooks/useCustomMove";
+import "./AddComponent.css";
 
 const initState = {
   pname: "",
@@ -10,57 +11,55 @@ const initState = {
   price: 0,
   brand: "",
   discountRate: 0,
-  salePrice: 0, // 자동 계산용으로 상태만 둠
+  salePrice: 0,
   files: [],
 };
 
 const AddComponent = () => {
   const [product, setProduct] = useState({ ...initState });
   const uploadRef = useRef();
-
-  // 진행중 모달
   const [fetching, setFetching] = useState(false);
-  // 결과 모달
   const [result, setResult] = useState(null);
-
-  const { moveToList } = useCustomMove(); // 이동을 위한 함수
+  const { moveToList } = useCustomMove();
 
   const handleChangeProduct = (e) => {
     const { name, value } = e.target;
 
+    // price, discountRate 입력 시 숫자만 허용
     if (name === "price" || name === "discountRate") {
-      // 앞 0 제거, 단 숫자 '0'은 유지
-      const normalizedValue = value.replace(/^0+(?=\d)/, "");
-      const parsedValue = parseInt(normalizedValue, 10) || 0;
-
+      // 빈 문자열은 허용 (사용자가 지우는 중일 수 있어서)
+      if (value !== "" && /[^0-9]/.test(value)) {
+        alert("반드시 숫자를 입력해주십시오");
+        return; // 상태 업데이트도 막음
+      }
+      const num = parseInt(value || "0", 10);
       setProduct((prev) => {
-        const updated = { ...prev, [name]: parsedValue };
-
-        // price 또는 discountRate가 바뀌면 salePrice 자동 계산
-        if (name === "price" || name === "discountRate") {
-          updated.salePrice = Math.round(
-            (updated.price * (100 - updated.discountRate)) / 100
-          );
-        }
-
+        const updated = { ...prev, [name]: num };
+        updated.salePrice = Math.round(
+          (updated.price * (100 - updated.discountRate)) / 100
+        );
         return updated;
       });
     } else {
-      setProduct((prev) => {
-        const updated = { ...prev, [name]: value };
-        return updated;
-      });
+      setProduct((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleClickAdd = () => {
+    // 최종 제출 전에도 한 번 더 검증
+    if (
+      !/^\d+$/.test(product.price.toString()) ||
+      !/^\d+$/.test(product.discountRate.toString())
+    ) {
+      alert("반드시 숫자를 입력해주십시오");
+      return;
+    }
+
     const files = uploadRef.current.files;
     const formData = new FormData();
-
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
-
     formData.append("pname", product.pname);
     formData.append("pdesc", product.pdesc);
     formData.append("price", product.price.toString());
@@ -68,13 +67,7 @@ const AddComponent = () => {
     formData.append("discountRate", product.discountRate.toString());
     formData.append("salePrice", product.salePrice.toString());
 
-    // 디버깅용 로그
-    for (let pair of formData.entries()) {
-      console.log("formData ✅", pair[0], ":", pair[1]);
-    }
-
     setFetching(true);
-
     postAdd(formData).then((data) => {
       setFetching(false);
       setResult(data.result);
@@ -83,68 +76,25 @@ const AddComponent = () => {
 
   const closeModal = () => {
     setResult(null);
-    moveToList("/products", { page: 1 }); // basePath 추가
+    moveToList("/selling", { page: 1 });
   };
 
   return (
-    <div className="border-2 border-sky-200 mt-10 m-2 p-4">
-      {fetching && <FetchingModal />}
+    <div className="add-component">
+      {fetching && <FetchingModal className="modal-overlay" />}
       {result && (
         <ResultModal
-          title={"Product Add Result"}
+          title="Product Add Result"
           content={`${result}번 등록 완료`}
           callbackFn={closeModal}
         />
       )}
 
-      {/* pname */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">Product Name</div>
+      {/* Brand */}
+      <div className="form-group">
+        <div className="form-label">Brand</div>
+        <div className="form-input">
           <input
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
-            name="pname"
-            type="text"
-            value={product.pname}
-            onChange={handleChangeProduct}
-          />
-        </div>
-      </div>
-
-      {/* pdesc */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">Desc</div>
-          <textarea
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md resize-y"
-            name="pdesc"
-            rows="4"
-            onChange={handleChangeProduct}
-            value={product.pdesc}
-          />
-        </div>
-      </div>
-
-      {/* price */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">Price</div>
-          <input
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
-            name="price"
-            type="number"
-            value={product.price === 0 ? "" : product.price}
-            onChange={handleChangeProduct}
-          />
-        </div>
-      </div>
-
-      {/* brand */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">Brand</div>
-          <input
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
             name="brand"
             type="text"
             value={product.brand}
@@ -153,56 +103,84 @@ const AddComponent = () => {
         </div>
       </div>
 
-      {/* discountRate */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">
-            Discount Rate (%)
-          </div>
+      {/* Product Name */}
+      <div className="form-group">
+        <div className="form-label">Product Name</div>
+        <div className="form-input">
           <input
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
+            name="pname"
+            type="text"
+            value={product.pname}
+            onChange={handleChangeProduct}
+          />
+        </div>
+      </div>
+
+      {/* Price */}
+      <div className="form-group">
+        <div className="form-label">Price</div>
+        <div className="form-input">
+          <input
+            name="price"
+            type="text" // 문자 제한을 위해 number -> text로 변경해도 좋습니다
+            value={product.price === 0 ? "" : product.price}
+            onChange={handleChangeProduct}
+          />
+        </div>
+      </div>
+
+      {/* Discount Rate (%) */}
+      <div className="form-group">
+        <div className="form-label">Discount Rate (%)</div>
+        <div className="form-input">
+          <input
             name="discountRate"
-            type="number"
+            type="text" // 동일
             value={product.discountRate === 0 ? "" : product.discountRate}
             onChange={handleChangeProduct}
           />
         </div>
       </div>
 
-      {/* salePrice 출력 (읽기 전용) */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch items-center">
-          <div className="w-1/5 p-6 text-right font-bold">Sale Price</div>
-          <div className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md bg-gray-100">
-            {product.salePrice.toLocaleString()} 원
-          </div>
-        </div>
-      </div>
-
-      {/* files */}
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-1/5 p-6 text-right font-bold">Files</div>
+      {/* Sale Price (읽기 전용) */}
+      <div className="form-group">
+        <div className="form-label">Sale Price</div>
+        <div className="form-input">
           <input
-            ref={uploadRef}
-            className="w-4/5 p-6 rounded-r border border-solid border-neutral-300 shadow-md"
-            type="file"
-            multiple
+            className="readonly-input"
+            type="text"
+            readOnly
+            value={`${product.salePrice.toLocaleString()} 원`}
           />
         </div>
       </div>
 
-      {/* add button */}
-      <div className="flex justify-end">
-        <div className="relative mb-4 flex p-4 flex-wrap items-stretch">
-          <button
-            type="button"
-            className="rounded p-4 w-36 bg-blue-500 text-xl text-white"
-            onClick={handleClickAdd}
-          >
-            ADD
-          </button>
+      {/* Desc */}
+      <div className="form-group">
+        <div className="form-label">Desc</div>
+        <div className="form-input">
+          <textarea
+            name="pdesc"
+            rows="4"
+            value={product.pdesc}
+            onChange={handleChangeProduct}
+          />
         </div>
+      </div>
+
+      {/* Files */}
+      <div className="form-group">
+        <div className="form-label">Files</div>
+        <div className="form-input">
+          <input ref={uploadRef} type="file" multiple />
+        </div>
+      </div>
+
+      {/* ADD 버튼 */}
+      <div className="button-group">
+        <button type="button" onClick={handleClickAdd}>
+          ADD
+        </button>
       </div>
     </div>
   );

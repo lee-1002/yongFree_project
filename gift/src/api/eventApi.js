@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_SERVER_HOST } from "./todoApi"; // 예: http://localhost:8080
+import { API_SERVER_HOST } from "./backendApi"; // 예: http://localhost:8080
 
 const host = `${API_SERVER_HOST}/api/events`;
 

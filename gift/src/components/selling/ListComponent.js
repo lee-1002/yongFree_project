@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+// src/components/ListComponent.js
+
+import { useEffect, useState, useRef } from "react";
 import { getList } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import FetchingModal from "../common/FetchingModal";
-import { API_SERVER_HOST } from "../../api/todoApi";
+import { API_SERVER_HOST } from "../../api/backendApi";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import { Link } from "react-router-dom";
 import "./ListComponent.css";
@@ -12,6 +14,8 @@ const host = API_SERVER_HOST;
 const SORT_OPTIONS = [
   { key: "low", label: "낮은 가격순" },
   { key: "high", label: "높은 가격순" },
+  { key: "discountLow", label: "최저 할인" },
+  { key: "discountHigh", label: "최대 할인" },
 ];
 
 const BRAND_CATEGORIES = [
@@ -34,45 +38,56 @@ const ListComponent = () => {
   const [sortKey, setSortKey] = useState("low");
 
   const [page, setPage] = useState(1);
-  const size = 10;
+  const size = 20; // 한 번에 20개씩
 
+  const sentinelRef = useRef(null);
+
+  // 1) 페이지 변화 시 데이터 페칭
   useEffect(() => {
     setFetching(true);
-
     getList({ page, size })
       .then((data) => {
-        if (!data.dtoList || data.dtoList.length === 0) {
+        const list = data.dtoList || [];
+        if (list.length < size) {
           setHasMore(false);
-        } else {
-          setDtoList((prev) => [...prev, ...data.dtoList]);
         }
-        setFetching(false);
+        setDtoList((prev) => [...prev, ...list]);
       })
-      .catch((err) => {
-        exceptionHandle(err);
-        setFetching(false);
-      });
+      .catch((err) => exceptionHandle(err))
+      .finally(() => setFetching(false));
   }, [page]);
 
+  // 2) IntersectionObserver 로 무한스크롤 트리거
   useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 150 &&
-        !fetching &&
-        hasMore
-      ) {
-        setPage((prev) => prev + 1);
+    if (!hasMore || fetching) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0,
       }
+    );
+
+    const sentinel = sentinelRef.current;
+    if (sentinel) observer.observe(sentinel);
+
+    return () => {
+      if (sentinel) observer.unobserve(sentinel);
     };
+  }, [hasMore, fetching]);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [fetching, hasMore]);
-
+  // 3) 필터 & 정렬
   const sortFns = {
     low: (a, b) => a.price - b.price,
     high: (a, b) => b.price - a.price,
+    discountLow: (a, b) => (a.discountRate || 0) - (b.discountRate || 0),
+    discountHigh: (a, b) => (b.discountRate || 0) - (a.discountRate || 0),
   };
 
   const filteredAndSorted = dtoList
@@ -90,9 +105,11 @@ const ListComponent = () => {
           ADD
         </Link>
       </div>
+
       <div className="selling-page">
         {fetching && <FetchingModal />}
 
+        {/* 카테고리 메뉴 */}
         <div className="category-menu">
           <div className="category-column">
             <h4>전체</h4>
@@ -105,7 +122,6 @@ const ListComponent = () => {
               </li>
             </ul>
           </div>
-
           {BRAND_CATEGORIES.map((cat) => (
             <div key={cat.label} className="category-column">
               <h4>{cat.label}</h4>
@@ -126,6 +142,7 @@ const ListComponent = () => {
           ))}
         </div>
 
+        {/* 정렬 메뉴 */}
         <ul className="sort-menu">
           {SORT_OPTIONS.map((opt) => (
             <li
@@ -138,6 +155,7 @@ const ListComponent = () => {
           ))}
         </ul>
 
+        {/* 상품 리스트 */}
         <ul className="product-list">
           {filteredAndSorted.map((product) => {
             const hasDiscount =
@@ -160,13 +178,11 @@ const ListComponent = () => {
                       src={`${host}/api/products/view/s_${product.uploadFileNames[0]}`}
                     />
                   )}
-
                   <p className="title">
                     {product.brand && !product.pname.startsWith(product.brand)
                       ? `${product.brand} ${product.pname}`
                       : product.pname}
                   </p>
-
                   {hasDiscount ? (
                     <p className="price">
                       <span className="discount">~{product.discountRate}%</span>
@@ -186,14 +202,15 @@ const ListComponent = () => {
               </li>
             );
           })}
-
-          {!fetching && filteredAndSorted.length === 0 && (
-            <li className="no-items">선택한 브랜드의 상품이 없습니다.</li>
-          )}
-          {!hasMore && filteredAndSorted.length > 0 && (
-            <li className="no-more">더 이상 불러올 상품이 없습니다.</li>
-          )}
         </ul>
+
+        {/* sentinel: 뷰포트 근처에 들어올 때만 다음 페이지 로드 */}
+        <div ref={sentinelRef} />
+
+        {/* 로딩/끝 메시지 */}
+        {!fetching && filteredAndSorted.length === 0 && (
+          <div className="no-items">선택한 브랜드의 상품이 없습니다.</div>
+        )}
       </div>
     </>
   );

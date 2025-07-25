@@ -39,6 +39,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     if (path.startsWith("/api/donationBoard/")) return true;
     if (path.startsWith("/api/products/")) return true; 
     if (path.startsWith("/files/")) return true;
+    if (path.startsWith("/api/order")) return true;
 
 
     return false;
@@ -59,7 +60,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             // 여기서 바로 401 에러 응답을 보냅니다.
             Gson gson = new Gson();
             String msg = gson.toJson(Map.of("error", "ERROR_ACCESS_TOKEN")); // 또는 "REQUIRE_LOGIN"
+            //여기를 주의해서 봐볼것.
 
+
+            
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             PrintWriter printWriter = response.getWriter();

@@ -23,6 +23,7 @@ const useCustomLogin = () => {
     //---------------로그아웃 함수
 
     dispatch(logout());
+    navigate("/", { replace: true });
   };
 
   const moveToPath = (path) => {

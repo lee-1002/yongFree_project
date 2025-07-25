@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./RandomBoxComponent.css";
 // import { drawRandomBoxProduct } from "../api/productsApi.js"; // 이 부분은 주석 처리하거나 삭제
 import { getList } from "../api/productsApi.js"; // getList를 임포트합니다.
-import { API_SERVER_HOST } from "../api/todoApi"; // 이미지 경로를 위해 필요합니다.
+import { API_SERVER_HOST } from "../api/backendApi"; // 이미지 경로를 위해 필요합니다.
 
 const host = API_SERVER_HOST; // 이미지 호스트 정의
 

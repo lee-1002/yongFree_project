@@ -1,142 +1,134 @@
-/* 전체 wrapper – 가운데 정렬 */
+/* ReadComponent.css */
+
+/* 전체 wrapper */
 .selling-read {
+  position: relative;
+  /* width: min(최대폭, 뷰포트 대비) */
+  width: min(800px, 90vw);
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+  font-family: "Noto Sans KR", sans-serif;
+  box-sizing: border-box;
+}
+
+/* 이미지+상세 정보를 담는 컨테이너 */
+.selling-read .content-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 40px 16px;
-  min-height: 100vh;
-  background: #fff;
+  gap: 1.5rem;
+  /* 전체 고정 높이 지정 */
+  height: 600px;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .selling-read .content-wrapper {
+    flex-direction: row;
+  }
+
+  /* 좌우 비율 */
+  .selling-read .content-wrapper .image-column {
+    flex: 0 0 60%;
+  }
+  .selling-read .content-wrapper .details-column {
+    flex: 0 0 40%;
+    /* 세로 스크롤 방지 */
+    overflow: auto;
+  }
+}
+
+/* 좌측 이미지 */
+.selling-read .content-wrapper .image-column {
+  display: flex;
+}
+.selling-read .content-wrapper .image-column img {
+  width: 100%;
+  height: 100%; /* 부모 높이(600px)에 꽉 채우기 */
+  object-fit: cover; /* 잘라서 꽉 채우기 */
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 우측 상세 정보 */
+.selling-read .content-wrapper .details-column dl {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%; /* 부모 높이(600px)에 꽉 채우기 */
   box-sizing: border-box;
 }
-
-/* 상세 본문 영역 (이미지, 제목, 본문 등) */
-.selling-read > div,
-.selling-read > img,
-.selling-read > h2,
-.selling-read > p,
-.selling-read .order-controls {
-  width: 100%;
-  max-width: 800px;
-  box-sizing: border-box;
-}
-
-/* 뒤로가기 버튼 */
-.selling-read > button {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  color: #0070f3;
-  font-size: 16px;
-  cursor: pointer;
-  margin-bottom: 16px;
-}
-
-/* 상품 이미지 */
-.selling-read img {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  object-fit: contain;
-}
-
-/* 상품명 */
-.selling-read h2 {
-  font-size: 28px;
-  margin: 8px 0;
-  color: #333;
-}
-
-/* 브랜드 · 가격 정보 */
-.selling-read p {
-  font-size: 16px;
-  color: #555;
-  margin: 4px 0;
-}
-
-/* 할인가 있을 때 강조 */
-.selling-read p.sale-price {
-  font-weight: bold;
-  color: #e60023;
-}
-.selling-read p.original-price {
-  text-decoration: line-through;
-  color: #999;
-  margin-left: 8px;
-}
-
-/* 상품 설명 */
-.selling-read .product-desc {
-  margin-top: 12px;
-  white-space: pre-wrap;
-  line-height: 1.6;
-  color: #444;
-}
-
-/* ── 구매 컨트롤 ── */
-.order-controls {
-  margin-top: 24px;
+.selling-read .content-wrapper .details-column dl .row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: 800px;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
 }
-
-/* 수량 입력 */
-.order-controls label {
-  font-size: 16px;
+.selling-read .content-wrapper .details-column dl .row dt {
+  width: 33%;
+  font-weight: 600;
   color: #333;
 }
-.order-controls input[type="number"] {
-  width: 60px;
-  padding: 4px 8px;
-  margin-left: 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+.selling-read .content-wrapper .details-column dl .row dd {
+  width: 67%;
+  color: #555;
 }
 
-/* 버튼 기본 스타일 */
-.order-controls button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* 장바구니 담기 버튼 */
-.order-controls button.btn-cart {
-  background-color: #0070f3;
-  color: #fff;
-}
-.order-controls button.btn-cart:hover {
-  background-color: #005bb5;
-}
-
-/* 바로 구매 버튼 */
-.order-controls button.btn-buy {
-  background-color: #e60023;
-  color: #fff;
-}
-.order-controls button.btn-buy:hover {
-  background-color: #b3001a;
-}
-
-/* 반응형 (화면 작아질 때) */
+/* 모바일 레이아웃 */
 @media (max-width: 600px) {
-  .selling-read {
-    padding: 20px 8px;
+  .selling-read .content-wrapper {
+    height: auto;
+    flex-direction: column;
   }
-  .selling-read img {
-    max-width: 100%;
-  }
-  .order-controls {
+  .selling-read .content-wrapper .details-column dl .row {
     flex-direction: column;
     align-items: flex-start;
   }
-  .order-controls button {
+  .selling-read .content-wrapper .details-column dl .row dt,
+  .selling-read .content-wrapper .details-column dl .row dd {
     width: 100%;
   }
+}
+
+/* 하단 버튼 그룹 */
+.selling-read .controls {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+.selling-read .controls button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* 버튼 색상 */
+.selling-read .controls .btn-cart {
+  background-color: #0070f3;
+  color: #fff;
+}
+.selling-read .controls .btn-cart:hover {
+  background-color: #005bb5;
+}
+.selling-read .controls .btn-modify {
+  background-color: #f59e0b;
+  color: #fff;
+}
+.selling-read .controls .btn-modify:hover {
+  background-color: #d97706;
+}
+.selling-read .controls .btn-list {
+  background-color: #6b7280;
+  color: #fff;
+}
+.selling-read .controls .btn-list:hover {
+  background-color: #4b5563;
 }

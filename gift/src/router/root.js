@@ -7,6 +7,7 @@ import donationRouter from "./donationRouter";
 import boardRouter from "./boardRouter";
 import searchRouter from "./searchRouter";
 import eventRouter from "./eventRouter";
+import orderRouter from "./orderRouter";
 
 const Loading = <div>Loading...</div>;
 
@@ -30,6 +31,7 @@ const root = createBrowserRouter([
           </Suspense>
         ),
       },
+
       {
         path: "map",
         element: (
@@ -38,6 +40,7 @@ const root = createBrowserRouter([
           </Suspense>
         ),
       },
+
       {
         path: "randombox",
         element: (
@@ -46,6 +49,7 @@ const root = createBrowserRouter([
           </Suspense>
         ),
       },
+
       {
         path: "cart",
         element: (
@@ -54,23 +58,32 @@ const root = createBrowserRouter([
           </Suspense>
         ),
       },
+
       {
         path: "event",
         children: eventRouter(),
       },
 
       {
+        path: "order",
+        children: orderRouter(),
+      },
+
+      {
         path: "board",
         children: boardRouter(),
       },
+
       {
         path: "selling",
         children: sellingRouter(),
       },
+
       {
         path: "donationBoard",
         children: donationRouter(),
       },
+
       {
         path: "search",
         children: searchRouter(),

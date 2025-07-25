@@ -1,210 +1,229 @@
+// src/components/board/ListComponent.js
 import React, { useState, useEffect, useRef } from "react";
-import { List, InfiniteLoader } from "react-virtualized";
+import { useNavigate } from "react-router-dom";
+import { fetchBoards, postAddBoard } from "../../api/boardsApi";
+import FetchingModal from "../common/FetchingModal";
+import ResultModal from "../common/ResultModal";
 import "./ListComponent.css";
 
-const currentNickname = "user1";
-
-const createDummyPosts = () =>
-  Array.from({ length: 30 }, (_, i) => ({
-    id: i + 1,
-    title: `추천합니다~ (${i + 1})`,
-    content: `여기 싸게 팔고 좋네요~`,
-    nickname: i % 2 === 0 ? "user1" : "userN",
-  }));
-
 export default function ListComponent() {
-  const [allPosts, setAllPosts] = useState(createDummyPosts());
-  const [search, setSearch] = useState("");
-  const [visibleCount, setVisibleCount] = useState(5);
-  const [vh, setVh] = useState(window.innerHeight);
+  const navigate = useNavigate();
+  const uploadRef = useRef();
+
+  // 게시글 데이터 + 로딩/결과 상태
+  const [posts, setPosts] = useState([]);
+  const [fetching, setFetching] = useState(false);
+  const [result, setResult] = useState(null);
+
+  // 페이지네이션
+  const POSTS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 새 글 폼
   const [showForm, setShowForm] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newContent, setNewContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const listContainerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-
+  // 초기 데이터 로드
   useEffect(() => {
-    const onResize = () => {
-      setVh(window.innerHeight);
-      if (listContainerRef.current) {
-        setContainerWidth(listContainerRef.current.offsetWidth);
-      }
-    };
-    window.addEventListener("resize", onResize);
-    onResize();
-    return () => window.removeEventListener("resize", onResize);
+    loadPosts();
   }, []);
 
-  const filtered = allPosts.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.content.toLowerCase().includes(search.toLowerCase())
-  );
-  const loaded = filtered.slice(0, visibleCount);
+  // --- 변경된 loadPosts: bno 기준 내림차순 정렬 추가 ---
+  const loadPosts = async () => {
+    const data = await fetchBoards();
+    // bno 기준 내림차순 정렬 (가장 큰 번호 먼저)
+    const sorted = data.sort((a, b) => b.bno - a.bno);
+    setPosts(sorted);
+    // (옵션) 페이지를 1로 리셋하고 싶다면:
+    // setCurrentPage(1);
+  };
+  // ------------------------------------------------------
 
-  const loadMore = ({ stopIndex }) =>
-    new Promise((res) => {
-      if (visibleCount > stopIndex) return res();
-      setTimeout(() => {
-        setVisibleCount((prev) => Math.min(prev + 5, filtered.length));
-        res();
-      }, 300);
-    });
-
-  const isLoaded = ({ index }) => index < loaded.length;
-
-  const onUpdate = (post) => {
-    const t = prompt("새 제목:", post.title);
-    const c = prompt("새 내용:", post.content);
-    if (t && c) {
-      setAllPosts((prev) =>
-        prev.map((p) =>
-          p.id === post.id && p.nickname === currentNickname
-            ? { ...p, title: t, content: c }
-            : p
-        )
-      );
-    }
+  // 파일 선택 처리
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles(files.map((f) => f.name));
+  };
+  const clearFileSelection = () => {
+    uploadRef.current.value = null;
+    setSelectedFiles([]);
   };
 
-  const onDelete = (id) =>
-    setAllPosts((prev) =>
-      prev.filter((p) => !(p.id === id && p.nickname === currentNickname))
-    );
-
-  const renderRow = ({ index, key, style }) => {
-    const post = loaded[index];
-    if (!post) return null;
-    const isOwner = post.nickname === currentNickname;
-    const truncated =
-      post.content.length > 100
-        ? post.content.slice(0, 100) + "..."
-        : post.content;
-    return (
-      <div key={key} style={style} className="Board-card">
-        <div className={`Board-header${!isOwner ? " no-actions" : ""}`}>
-          <div>
-            <h3>{post.title}</h3>
-            <small>작성자: {post.nickname}</small>
-          </div>
-          {isOwner && (
-            <div className="button-container">
-              <button className="edit-btn" onClick={() => onUpdate(post)}>
-                수정
-              </button>
-              <button className="delete-btn" onClick={() => onDelete(post.id)}>
-                삭제
-              </button>
-            </div>
-          )}
-        </div>
-        <p>{truncated}</p>
-      </div>
-    );
-  };
-
-  const handleSubmit = (e) => {
+  // 글 등록
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newTitle || !newContent) {
-      alert("제목과 내용을 입력해주세요");
+    if (!title.trim() || !content.trim()) {
+      alert("제목과 내용을 입력해주세요.");
       return;
     }
-    const newPost = {
-      id: allPosts.length + 1,
-      title: newTitle,
-      content: newContent,
-      nickname: currentNickname,
-    };
-    setAllPosts((prev) => [newPost, ...prev]);
-    setVisibleCount((v) => v + 1);
-    setShowForm(false);
-    setNewTitle("");
-    setNewContent("");
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("writer", "user1");
+    Array.from(uploadRef.current.files).forEach((f) =>
+      formData.append("files", f)
+    );
+
+    setFetching(true);
+    try {
+      const { result: bno } = await postAddBoard(formData);
+      setResult(bno);
+      await loadPosts(); // 등록 후에도 내림차순 유지
+    } catch (err) {
+      console.error(err);
+      alert("등록 실패했습니다.");
+    } finally {
+      setFetching(false);
+      setShowForm(false);
+      setTitle("");
+      setContent("");
+      clearFileSelection();
+    }
   };
+
+  // 현재 페이지에 보여줄 게시글
+  const indexOfLast = currentPage * POSTS_PER_PAGE;
+  const indexOfFirst = indexOfLast - POSTS_PER_PAGE;
+  const currentPosts = posts.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
 
   return (
     <div className="Board-main">
-      <h1 className="board-title">게시판</h1>
+      {fetching && <FetchingModal />}
 
-      <div className="Board-controls">
-        <input
-          type="text"
-          placeholder="제목+내용"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setVisibleCount(5);
-          }}
+      {result && (
+        <ResultModal
+          title="등록 완료"
+          content={`${result}번 게시글이 등록되었습니다.`}
+          callbackFn={() => setResult(null)}
         />
+      )}
+
+      {/* 검색바 (현재 검색 기능 미구현) */}
+      <div className="search-bar">
+        <select>
+          <option value="">전체</option>
+        </select>
+        <input type="text" placeholder="검색어를 입력하세요" disabled />
+        <button disabled>검색</button>
         <div className="add-post-button" onClick={() => setShowForm(true)}>
-          <img src="/write.png" alt="글쓰기" className="add-post-image" />
           <span className="add-post-text">글쓰기</span>
         </div>
       </div>
 
+      {/* 카테고리 + 테이블 */}
       <div className="Board-content-area">
-        <aside className="category-container">
-          <h3>카테고리</h3>
+        <div className="category-container">
           <ul className="category-list">
-            {[
-              "전체",
-              "자유게시판",
-              "거래후기/리뷰",
-              "사기 주의/블랙리스트",
-              "꿀팁/노하우",
-              "이용문의",
-            ].map((c) => (
-              <li key={c}>
-                <button className="category-btn">{c}</button>
-              </li>
-            ))}
+            <li>
+              <button className="category-btn active">전체</button>
+            </li>
           </ul>
-        </aside>
-
-        <section
-          className="board-list-container"
-          ref={listContainerRef}
-          style={{ height: vh - 200 }}
-        >
-          <InfiniteLoader
-            isRowLoaded={isLoaded}
-            loadMoreRows={loadMore}
-            rowCount={filtered.length}
-            threshold={2}
-          >
-            {({ onRowsRendered, registerChild }) => (
-              <List
-                width={containerWidth}
-                height={vh - 200}
-                rowHeight={170}
-                rowCount={loaded.length}
-                rowRenderer={renderRow}
-                onRowsRendered={onRowsRendered}
-                ref={registerChild}
-              />
-            )}
-          </InfiniteLoader>
-        </section>
+        </div>
+        <div className="board-table-container">
+          <table className="board-table">
+            <thead>
+              <tr>
+                <th className="id">번호</th>
+                <th className="title">제목</th>
+                <th className="date">등록일</th>
+                <th className="views">조회수</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPosts.map((p) => (
+                <tr key={p.bno}>
+                  <td className="id">{p.bno}</td>
+                  <td
+                    className="title"
+                    onClick={() => navigate(`/board/read/${p.bno}`)}
+                  >
+                    {p.title}
+                  </td>
+                  <td className="date">{p.regDate?.slice(0, 10) || ""}</td>
+                  <td className="views">{p.views ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
+      {/* 페이지네이션 */}
+      <nav className="pagination-nav">
+        <ul className="pagination-list">
+          <li
+            className="pagination-item prev"
+            onClick={() =>
+              currentPage > 1 && setCurrentPage((prev) => prev - 1)
+            }
+          >
+            &lt;
+          </li>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            <li
+              key={num}
+              className={`pagination-item ${
+                currentPage === num ? "active" : ""
+              }`}
+              onClick={() => setCurrentPage(num)}
+            >
+              {num}
+            </li>
+          ))}
+          <li
+            className="pagination-item next"
+            onClick={() =>
+              currentPage < totalPages && setCurrentPage((prev) => prev + 1)
+            }
+          >
+            &gt;
+          </li>
+        </ul>
+      </nav>
+
+      {/* 글쓰기 모달 */}
       {showForm && (
-        <div className="Form-overlay" style={{ height: vh }}>
+        <div className="Form-overlay">
           <form className="Write-form" onSubmit={handleSubmit}>
-            <h2>새 글쓰기</h2>
+            <h2>새 글 작성</h2>
             <input
               type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="제목을 입력하세요"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
             />
             <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="내용을 입력하세요"
-              value={newContent}
-              onChange={(e) => setNewContent(e.target.value)}
             />
+            <label>파일 업로드</label>
+            <input
+              ref={uploadRef}
+              type="file"
+              multiple
+              onChange={handleFileChange}
+            />
+            {selectedFiles.length > 0 && (
+              <ul>
+                {selectedFiles.map((name, idx) => (
+                  <li key={idx}>{name}</li>
+                ))}
+              </ul>
+            )}
             <div className="Write-buttons">
               <button type="submit">등록</button>
-              <button type="button" onClick={() => setShowForm(false)}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  clearFileSelection();
+                }}
+              >
                 취소
               </button>
             </div>

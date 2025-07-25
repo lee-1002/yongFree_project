@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+// src/components/LoginComponent.js
+import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
-import { login, loginPostAsync } from "../../slices/loginSlice";
-import { useNavigate } from "react-router-dom";
+
 import useCustomLogin from "../../hooks/useCustomLogin";
 import KakaoLoginComponent from "./KakaoLoginComponent";
 
@@ -13,79 +13,90 @@ const initState = {
 
 const LoginComponent = () => {
   const [loginParam, setLoginParam] = useState({ ...initState });
-
   const { doLogin, moveToPath } = useCustomLogin();
-
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     loginParam[e.target.name] = e.target.value;
-
     setLoginParam({ ...loginParam });
   };
 
-  const handleClickLogin = (e) => {
-    doLogin(loginParam) // loginSlice의 비동기 호출
-      .then((data) => {
-        console.log(data);
-
-        if (data.error) {
-          alert("이메일과 패스워드를 다시 확인하세요");
-        } else {
-          alert("로그인 성공");
-          moveToPath("/");
-        }
-      });
+  const handleClickLogin = () => {
+    doLogin(loginParam).then((data) => {
+      if (data.error) {
+        alert("이메일과 패스워드를 다시 확인하세요");
+      } else {
+        alert("로그인 성공");
+        moveToPath("/");
+      }
+    });
   };
 
   return (
-    <div className="border-2 border-sky-200 mt-10 m-2 p-4">
-      <div className="flex justify-center">
-        <Link to="/">
-          <div className="text-4xl m-4 p-4 font-extrabold text-blue-500">
-            gifree
-          </div>
-        </Link>
-      </div>
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-full p-3 text-left font-bold">Email</div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        {/* Logo centered */}
+        <div className="mb-6">
+          <Link to="/">
+            <img
+              src="/logo5.jpg"
+              alt="Gifree 로고"
+              className="h-[70px] w-auto mx-auto"
+            />
+          </Link>
+        </div>
+        {/* Email Input */}
+        <div className="mb-4 mt-16">
           <input
-            className="w-full p-3 rounded-r border border-solid border-neutral-500 shadow-md"
             name="email"
-            type={"text"}
+            type="text"
             value={loginParam.email}
             onChange={handleChange}
-          ></input>
+            placeholder="아이디"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full flex-wrap items-stretch">
-          <div className="w-full p-3 text-left font-bold">Password</div>
+
+        {/* Password Input */}
+        <div className="mb-4">
           <input
-            className="w-full p-3 rounded-r border border-solid border-neutral-500 shadow-md"
             name="pw"
-            type={"password"}
+            type="password"
             value={loginParam.pw}
             onChange={handleChange}
-          ></input>
+            placeholder="비밀번호"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Login Button */}
+        <button
+          onClick={handleClickLogin}
+          className="w-full bg-blue-500 hover:shadow-lg text-white font-semibold py-2 rounded-lg transition"
+        >
+          로그인
+        </button>
+
+        {/* Kakao Login */}
+        <div className="mt-4">
+          <KakaoLoginComponent />
+        </div>
+
+        {/* Bottom Links */}
+        <div className="mt-6 flex justify-between items-center">
+          <Link
+            to="/member/join"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            회원가입
+          </Link>
+          <Link to="/member/find-id" className="text-gray-600 hover:underline">
+            아이디 찾기
+          </Link>
+          <Link to="/member/find-pw" className="text-gray-600 hover:underline">
+            비밀번호 찾기
+          </Link>
         </div>
       </div>
-      <div className="flex justify-center">
-        <div className="relative mb-4 flex w-full justify-center">
-          <div className="w-2/5 p-6 flex justify-center font-bold">
-            <button
-              className="rounded p-4 w-36 bg-blue-500 text-xl  text-white"
-              onClick={handleClickLogin}
-            >
-              LOGIN
-            </button>
-          </div>
-        </div>
-      </div>
-      <KakaoLoginComponent />
     </div>
   );
 };

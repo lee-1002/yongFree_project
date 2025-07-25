@@ -13,7 +13,7 @@
 /* ✅ 등록 버튼 */
 .add-button {
   display: inline-block;
-  background-color: #3885dd;
+  background-color: #3b82f6;
   color: white;
   padding: 8px 16px;
   font-size: 14px;
@@ -23,7 +23,7 @@
   transition: background-color 0.2s;
 }
 .add-button:hover {
-  background-color: #3c62ca;
+  background-color: #3b82f6;
 }
 
 /* 카테고리 메뉴: 다중 컬럼 그리드 */

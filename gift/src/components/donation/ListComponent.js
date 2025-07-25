@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getList, getRecentList } from "../../api/donationBoardApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import PageComponent from "../common/PageComponent";
-import { API_SERVER_HOST } from "../../api/todoApi";
+import { API_SERVER_HOST } from "../../api/backendApi";
 import RecentPostsSlider from "./RecentPostsSlider";
 import "./ListComponent.css";
 import { useNavigate } from "react-router-dom";

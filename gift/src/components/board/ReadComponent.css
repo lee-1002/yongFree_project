@@ -1,0 +1,155 @@
+/* src/components/board/ReadComponent.css */
+
+/* 전체 읽기 페이지 컨테이너 */
+.ReadPage-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* 게시글 제목 */
+.ReadPage-container h1 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+
+/* 작성자 */
+.author {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* 본문 내용 박스 */
+.content-box {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.content-box p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* 소유자 버튼 그룹 (Modify / Delete / ← List) */
+.owner-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* 버튼 공통 */
+.owner-buttons button {
+  width: 80px; /* 동일한 너비 */
+  height: 36px; /* 동일한 높이 */
+  line-height: 36px; /* 텍스트 수직 중앙 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s;
+  padding: 0; /*위아래 패딩 대신 height 사용*/
+}
+
+/* Modify 버튼 */
+.owner-buttons .edit-btn {
+  background-color: #f59e0b;
+  color: #fff;
+}
+.owner-buttons .edit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Delete 버튼 */
+.owner-buttons .delete-btn {
+  background-color: #f44336;
+  color: #fff;
+}
+.owner-buttons .delete-btn:hover {
+  opacity: 0.9;
+}
+
+/* List 버튼 */
+.owner-buttons .back-button {
+  background: #6b7280;
+  border: 1px solid #ccc;
+  color: #fff;
+}
+.owner-buttons .back-button:hover {
+  background: #4b5563;
+}
+
+/* 수정 모드용 입력 필드 */
+.edit-title,
+.edit-content {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.edit-title {
+  height: 40px;
+}
+.edit-content {
+  min-height: 150px;
+  resize: vertical;
+}
+
+/* 수정 모드 버튼 그룹 */
+.edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+.edit-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+.edit-buttons button:first-child {
+  background-color: #4caf50;
+  color: #fff;
+}
+.edit-buttons button:first-child:hover {
+  opacity: 0.9;
+}
+.edit-buttons button:last-child {
+  background-color: #ccc;
+  color: #333;
+}
+.edit-buttons button:last-child:hover {
+  opacity: 0.9;
+}
+
+/* 반응형: 모바일에서 패딩 및 폭 조정 */
+@media (max-width: 600px) {
+  .ReadPage-container {
+    padding: 16px;
+    margin: 16px;
+  }
+  .owner-buttons button {
+    width: 70px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 12px;
+  }
+  .ReadPage-container h1 {
+    font-size: 20px;
+  }
+}

@@ -24,7 +24,7 @@ import com.gifree.security.handler.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import org.springframework.http.HttpMethod;
+
 import org.springframework.http.HttpStatus;// HttpStatus 임포트
 
 @Configuration
@@ -47,19 +47,8 @@ public class CustomSecurityConfig {
       httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
     });
 //추가
-    http.authorizeHttpRequests(auth -> auth    
-    .requestMatchers(
-      "/api/member/login", // 로그인 엔드포인트는 항상 허용
-      "/api/member/kakao", // 카카오 로그인 엔드포인트도 허용 (필요하다면)
-      "/api/products/list", // <-- 상품 목록 조회 허용 (가장 중요!)
-      "/api/products/view/*", // <-- 상품 이미지 조회 허용 (가장 중요!)
-      "/api/events/**",
-      "/api/donationBoard/**",
-      "/files/**"
-
-  ).permitAll() 
-    .anyRequest().authenticated()
-);
+http.authorizeHttpRequests(auth -> auth    
+.anyRequest().permitAll());
 
 
     
@@ -67,6 +56,7 @@ public class CustomSecurityConfig {
 
     http.csrf(config -> config.disable());
     http.formLogin(config ->{
+      //여기도 주의 깊게 볼 것.
       config.loginPage("/api/member/login");
       config.successHandler(new APILoginSuccessHandler());
       config.failureHandler(new APILoginFailHandler());

@@ -10,7 +10,7 @@ import useCustomMove from "../../hooks/useCustomMove";
 import Quill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import jwtAxios from "../../util/jwtUtil";
-import { API_SERVER_HOST } from "../../api/todoApi";
+import { API_SERVER_HOST } from "../../api/backendApi";
 
 const initState = {
   tno: 0,
